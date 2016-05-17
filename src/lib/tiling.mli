@@ -231,3 +231,21 @@ module Problem3 : sig
 end
 
 
+module FourColoring : sig
+
+  type node = {
+    tile : Tile.t;
+    x : int;
+    y : int;
+  }
+
+  type graph (* = { *)
+  (*   matrix : Pattern.t; *)
+  (*   adj : (node * (node list)) list *)
+  (* } *)
+
+  type coloring
+
+  val get_graph : Problem.solution -> graph
+  val solve : graph -> coloring option
+end

@@ -740,3 +740,56 @@ module Problem3 = struct
 end
 
 
+module FourColoring = struct
+
+  type node = {
+    tile : Tile.t;
+    x : int;
+    y : int;
+  }
+
+  type graph = {
+    grid : Pattern.t;
+    adj : (node * (node list)) list
+  }
+
+  type color = int
+  type coloring = (node * color) list
+  type cell = int*int
+
+  let get_cells height x y (t : Tile.t) =
+    let res = ref [] in
+    for y' = 0 to t.Tile.pattern.height - 1 do
+      for x' = 0 to t.Tile.pattern.width - 1 do
+	if t.Tile.pattern.matrix.(y').(x') then
+	  let cell = ((x + x'),(height - 1 - (y + y'))) in
+	  res := cell::!res
+      done
+    done;
+    !res;;
+
+  let valid_cell grid x y =
+      x < grid.Pattern.width
+      && y < grid.Pattern.height
+      && grid.Pattern.matrix.(y).(x)
+
+  let get_neighbours_raw (i : int) (j : int) = [(i-1,j);(i+1,j);(i,j-1);(i,j+1)];;
+  let get_neighbours grid i j =
+    List.filter
+      (fun (i1,j1) -> valid_cell grid i1 j1)
+      (get_neighbours_raw i j);;
+
+  let get_tile_cell_graph (s : Problem.solution) : (node * (cell list)) list =
+    let reverse_map = Hashtbl.create 100 in
+    let all_cells grid x y t = get_cells grid.Pattern.height x y t in
+    let all_outside_neighbours grid all_cells =
+      List.concat
+	(List.map (fun (i,j) -> get_neighbours grid i j) all_cells) in
+    raise Not_found;;
+
+
+  let get_graph (s : Problem.solution) = raise Not_found;;
+
+  let solve (g: graph) = None
+
+end;;
