@@ -2,4 +2,4 @@ PKG menhirLib
 S src
 S src/lib
 B _build/src
-S _build/src/lib
+B _build/src/lib
