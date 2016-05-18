@@ -254,12 +254,13 @@ module FourColoring : sig
 
   val mk_graph : Pattern.t -> node array -> int list array -> graph
 
+  type color
   type coloring
 
   val get_graph : Problem.problem -> Problem.solution -> graph
 
   val create_line : int -> node -> int -> int list -> int list
-  val extract_coloring : int -> int list array -> int list -> (int * int) list
+  val extract_coloring : graph -> int -> int list array -> int list -> (node * int) list
 
-  val solve : graph -> (int * int) list
+  val solve : graph -> (node * color) list
 end

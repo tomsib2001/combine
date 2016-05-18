@@ -859,18 +859,18 @@ module FourColoring = struct
     |> List.sort compare
 
 
-  let extract_coloring size sparse solution : (int * int) list =
+  let extract_coloring (g : graph) size sparse solution : (node * int) list =
     List.fold_left (fun colors ln ->
 	let a = sparse.(ln) in
-	let node = List.hd a in
-	let nodeloc = node * 4 + size in
+	let nodeId = List.hd a in
+	let nodeloc = nodeId * 4 + size in
 	let color = List.find (fun x -> x >= nodeloc && x < nodeloc + 4) a - nodeloc in
-	(node, color) :: colors
+	(g.nodes.(nodeId), color) :: colors
       ) [] solution
 
 
 
-  let solve (g: graph) =
+  let solve (g: graph) : coloring =
     (* Should we store the number of nodes ? *)
     let primary = Array.length g.nodes in
     let sparse = Array.of_list @@ snd @@ Array.fold_left (
@@ -882,9 +882,43 @@ module FourColoring = struct
     in
     let emc = Emc.D.create_sparse ~primary ~columns:(primary*5) sparse in
     let solution = Emc.D.find_solution emc in
-    let coloring = extract_coloring primary sparse solution in
+    let coloring = extract_coloring g primary sparse solution in
     coloring
 
+(*   let print_solution_to_svg fmt ~width ~height p s = *)
+(*     let u = width / p.grid.width in *)
+(*     fprintf fmt *)
+(*       "@[<hov 2><svg xmlns=\"http://www.w3.org/2000/svg\" \ *)
+(* width=\"%d\" height=\"%d\">@\n" *)
+(*       width height; *)
+(*   (\* print_board_svg p.grid.width p.grid.height u fmt; *\) *)
+(*     let inc = golden_ratio *. 360. in *)
+(*     Random.self_init (); *)
+(*     let h = ref (Random.float 360.)  in *)
+(*     List.iter ( *)
+(*       fun (t, x, y) -> *)
+(* 	let color = hsv_to_rgb !h 0.7 0.95 in *)
+(* 	h := !h +. inc; *)
+(* 	print_tile_svg p.grid.height x y u color fmt t; *)
+(*     ) s; *)
+(*     fprintf fmt "@]@\n</svg>" *)
+
+
+  let print_solution_to_svg_four_colors fmt ~width ~height (p : Problem.problem) (s : Problem.solution) =
+    let g = (get_graph p s) in
+    let coloring = solve g in
+    let u = width / p.grid.width in
+      Format.fprintf fmt
+      "@[<hov 2><svg xmlns=\"http://www.w3.org/2000/svg\" \
+width=\"%d\" height=\"%d\">@\n"
+      width height;
+    Problem.print_board_svg p.grid.width p.grid.height u fmt;
+    List.iter (
+      fun (node,color) ->
+	let color = Problem.hsv_to_rgb (float_of_int color) 0.7 0.95 in
+	Problem.print_tile_svg p.grid.height node.x node.y u color fmt node.tile;
+    ) coloring;
+    Format.fprintf fmt "@]@\n</svg>"
 
 
 
