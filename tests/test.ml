@@ -149,7 +149,15 @@ let () =
   let n3 = mk_node ~id:3 t 0 0 in
   let line = create_line 4 n2 color [n0; n1; n3] in
   assert (line = [2; 5; 9; 13; 17]);
-  assert ([n2.id, color] = extract_coloring 4 (Array.make 1 line) [0])
+  assert ([n2.id, color] = extract_coloring 4 (Array.make 1 line) [0]);
+
+  let coloring = solve @@ mk_graph (Pattern.dummy ()) @@ [
+      (n2, [n0; n1; n3]);
+      (n1, []);
+      (n3, []);
+      (n0, []);
+    ] in
+  assert (coloring = [(0, 0); (2, 1); (1, 0); (3, 0); ]);
 
 
 (*

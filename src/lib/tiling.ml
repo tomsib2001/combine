@@ -761,10 +761,13 @@ module FourColoring = struct
     tile; x; y
   }
 
+
   type graph = {
     grid : Pattern.t;
     adj : (node * (node list)) list
   }
+
+  let mk_graph grid adj = {grid; adj}
 
 
   type color = int
@@ -811,10 +814,14 @@ module FourColoring = struct
      - the n firsts bool corresponds to the choice of the node
      - the n * 4 nexts are coloration constraint for the node and its neighbors
 
-     This version is easier for extracting the solution than the n * 5 boolean. In the sparse :
+     This version is easier for extracting the solution than the n * 5 boolean.
+     In the sparse :
      - List.hd line  -> the current node
      - the chosen color for the node is the integer in the
         interval : [node * 4 +size ; node * 4 + size + color[
+
+     And it's not only easier, it's necessary to put the boolean for the current
+     node at the beggining because those columns are primary.
 
      see example at the end of tests/test.ml
   *)
@@ -836,19 +843,18 @@ module FourColoring = struct
 
 
   let solve (g: graph) =
-    (* Should we precalculate the number of nodes ? *)
-    let columns = List.length g.adj in
+    (* Should we store the number of nodes ? *)
+    let primary = List.length g.adj in
     let sparse = Array.of_list @@ List.fold_left (
         fun lines (node, neighbors) ->
-          let cl c = create_line columns node c neighbors in
+          let cl c = create_line primary node c neighbors in
           cl 0 :: cl 1 :: cl 2 :: cl 3 :: lines
       ) [] g.adj
     in
-    let emc = Emc.D.create_sparse ~columns sparse in
+    let emc = Emc.D.create_sparse ~primary ~columns:(primary*5) sparse in
     let solution = Emc.D.find_solution emc in
-    let coloring = extract_coloring columns sparse solution in
-    (* (int * int) list *)
-    None
+    let coloring = extract_coloring primary sparse solution in
+    coloring
 
 
 
