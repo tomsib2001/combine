@@ -50,8 +50,8 @@ module Pattern = struct
     let new_m = Array.make_matrix new_h new_w false in
     for y = 0 to h-1 do
       for x = 0 to w-1 do
-        let new_x, new_y = trans ~w ~h (x, y)  in
-        new_m.(new_y).(new_x) <- p.matrix.(y).(x)
+	let new_x, new_y = trans ~w ~h (x, y)  in
+	new_m.(new_y).(new_x) <- p.matrix.(y).(x)
       done
     done;
     { matrix = new_m; height = new_h; width = new_w; size = p.size }
@@ -60,10 +60,10 @@ module Pattern = struct
     let even = ref 0 and odd = ref 0 in
     for y = p.height-1 downto 0 do
       Array.iteri (
-        fun x cell ->
-          if cell then Format.fprintf fmt "*"
-          else Format.fprintf fmt ".";
-          if cell then if (x + y) mod 2 = 0 then incr even else incr odd
+	fun x cell ->
+	  if cell then Format.fprintf fmt "*"
+	  else Format.fprintf fmt ".";
+	  if cell then if (x + y) mod 2 = 0 then incr even else incr odd
       ) p.matrix.(y);
       if y > 0 then Format.fprintf fmt "@\n"
     done
@@ -74,7 +74,7 @@ module Pattern = struct
     let m = Array.make_matrix h w false in
     for y = 0 to min_h - 1 do
       for x = 0 to min_w - 1 do
-        m.(y).(x) <- p.matrix.(y).(x)
+	m.(y).(x) <- p.matrix.(y).(x)
       done
     done;
     { matrix = m; height = h; width = w; size = compute_size m }
@@ -83,7 +83,7 @@ module Pattern = struct
     let m = Array.make_matrix h w false in
     for y' = y to min p.height h - 1 do
       for x' = x to min p.width w - 1 do
-        m.(y' - y).(x' - x) <- p.matrix.(y').(x')
+	m.(y' - y).(x' - x) <- p.matrix.(y').(x')
       done
     done;
     {matrix = m; height = h; width = w; size = compute_size m }
@@ -93,9 +93,9 @@ module Pattern = struct
     let m = Array.make_matrix h w false in
     for y = 0 to h - 1 do
       for x = 0 to w - 1 do
-        let new_x, new_y = x + ofsx, y + ofsy in
-        if new_x < w && new_x >= 0 && new_y < h && new_y >= 0 then
-          m.(new_y).(new_x) <- p.matrix.(y).(x)
+	let new_x, new_y = x + ofsx, y + ofsy in
+	if new_x < w && new_x >= 0 && new_y < h && new_y >= 0 then
+	  m.(new_y).(new_x) <- p.matrix.(y).(x)
       done
     done;
     { matrix = m; height = h; width = w; size = compute_size m }
@@ -107,7 +107,7 @@ module Pattern = struct
     let m = Array.make_matrix h w false in
     for y = 0 to h - 1 do
       for x = 0 to w - 1 do
-        m.(y).(x) <- op p1.matrix.(y).(x) p2.matrix.(y).(x)
+	m.(y).(x) <- op p1.matrix.(y).(x) p2.matrix.(y).(x)
       done
     done;
     { matrix = m; height = h; width = w; size = compute_size m }
@@ -124,10 +124,10 @@ module Pattern = struct
     let trans = D4.apply iso in
     try
       for y = 0 to p.height - 1 do
-        for x = 0 to p.width -1 do
-          let new_x, new_y = trans ~w ~h (x, y) in
-          if p.matrix.(new_y).(new_x) <> p.matrix.(y).(x) then raise Exit
-        done
+	for x = 0 to p.width -1 do
+	  let new_x, new_y = trans ~w ~h (x, y) in
+	  if p.matrix.(new_y).(new_x) <> p.matrix.(y).(x) then raise Exit
+	done
       done;
       true
     with Exit ->
@@ -194,11 +194,11 @@ module Tile = struct
 (*
   let create_all_symmetries t = match t.symmetries with
     | Snone ->
-        [t]
+	[t]
     | Srotations | Sall as s ->
-        let g = D4.elements (D4.quotient D4.d4 t.isos) in
+	let g = D4.elements (D4.quotient D4.d4 t.isos) in
 	let g = if s = Srotations then D4.S.filter D4.is_positive g else g in
-        List.map (fun iso -> apply iso t) (D4.S.elements g)
+	List.map (fun iso -> apply iso t) (D4.S.elements g)
 
   let create_all_symmetries t =
     let l = create_all_symmetries t in
@@ -240,8 +240,8 @@ module Problem = struct
   let put_char tile board x y c =
     for y' = 0 to tile.Tile.pattern.height - 1 do
       for x' = 0 to tile.Tile.pattern.width - 1 do
-        if tile.Tile.pattern.matrix.(y').(x') then
-          board.(y + y').(x' + x) <- c
+	if tile.Tile.pattern.matrix.(y').(x') then
+	  board.(y + y').(x' + x) <- c
       done
     done
 
@@ -252,12 +252,12 @@ module Problem = struct
     let board = Array.make_matrix p.grid.height p.grid.width '.' in
     List.iter (
       fun (t, x, y) ->
-        put_char t board x y (Char.chr !unique);
-        incr unique
+	put_char t board x y (Char.chr !unique);
+	incr unique
     ) s;
     for y = p.grid.height - 1 downto 0 do
       for x = 0 to p.grid.width - 1 do
-        fprintf fmt "%c" board.(y).(x)
+	fprintf fmt "%c" board.(y).(x)
       done;
       if y > 0 then fprintf fmt "@\n"
     done;
@@ -267,12 +267,12 @@ module Problem = struct
     for i = 0 to height do
       fprintf fmt "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" \
 style=\"stroke:black;stroke-width:1;\" />@\n"
-        0 (i * u) (u * width) (i * u)
+	0 (i * u) (u * width) (i * u)
     done;
     for i = 0 to width do
       fprintf fmt "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" \
 style=\"stroke:black;stroke-width:1;\" />@\n"
-        (i * u) 0 (i * u) (u * height)
+	(i * u) 0 (i * u) (u * height)
     done
 
   let print_square_svg x y u color fmt =
@@ -288,8 +288,8 @@ style=\"stroke:black;stroke-width:1;\" />@\n"
 stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;\">@\n";
     for y' = 0 to t.Tile.pattern.height - 1 do
       for x' = 0 to t.Tile.pattern.width - 1 do
-        if t.Tile.pattern.matrix.(y').(x') then
-          print_square_svg (x + x') (height - 1 - (y + y')) u color fmt
+	if t.Tile.pattern.matrix.(y').(x') then
+	  print_square_svg (x + x') (height - 1 - (y + y')) u color fmt
       done
     done;
     fprintf fmt "</g>@\n"
@@ -327,9 +327,9 @@ width=\"%d\" height=\"%d\">@\n"
     let h = ref (Random.float 360.)  in
     List.iter (
       fun (t, x, y) ->
-        let color = hsv_to_rgb !h 0.7 0.95 in
-        h := !h +. inc;
-        print_tile_svg p.grid.height x y u color fmt t;
+	let color = hsv_to_rgb !h 0.7 0.95 in
+	h := !h +. inc;
+	print_tile_svg p.grid.height x y u color fmt t;
     ) s;
     fprintf fmt "@]@\n</svg>"
 
@@ -354,16 +354,16 @@ width=\"%d\" height=\"%d\">@\n"
   (* return true if piece could be put at position x y*)
     let is_possible_position tile board x y =
       try
-        for y' = 0 to tile.Tile.pattern.Pattern.height - 1 do
-          for x' = 0 to tile.Tile.pattern.Pattern.width - 1 do
-            if tile.Tile.pattern.Pattern.matrix.(y').(x')
-              && not (existing_position board (x + x') (y + y'))
-            then raise Exit
-          done
-        done;
-        true
+	for y' = 0 to tile.Tile.pattern.Pattern.height - 1 do
+	  for x' = 0 to tile.Tile.pattern.Pattern.width - 1 do
+	    if tile.Tile.pattern.Pattern.matrix.(y').(x')
+	      && not (existing_position board (x + x') (y + y'))
+	    then raise Exit
+	  done
+	done;
+	true
       with
-        | Exit ->  false
+	| Exit ->  false
 
   (* Placing piece on board *)
 
@@ -376,26 +376,26 @@ width=\"%d\" height=\"%d\">@\n"
     let get_id_col_emc problem x y =
       let id = ref 0 in
       try
-        for y' = 0 to problem.grid.Pattern.height -1 do
-          for x' = 0 to problem.grid.Pattern.width - 1 do
-            if y' = y && x' = x then raise Exit;
-            if problem.grid.Pattern.matrix.(y').(x') then
-              incr id
-          done
-        done;
-        !id
+	for y' = 0 to problem.grid.Pattern.height -1 do
+	  for x' = 0 to problem.grid.Pattern.width - 1 do
+	    if y' = y && x' = x then raise Exit;
+	    if problem.grid.Pattern.matrix.(y').(x') then
+	      incr id
+	  done
+	done;
+	!id
       with Exit -> !id
 
     let one_line n tile_id tile problem ~x ~y =
       let line = ref [] in
       for y' = 0 to tile.Tile.pattern.Pattern.height - 1 do
-        for x' = 0 to tile.Tile.pattern.Pattern.width - 1 do
-          if tile.Tile.pattern.Pattern.matrix.(y').(x') then begin
-            line := get_id_col_emc problem (x + x') (y + y') :: !line;
-            if tile.Tile.multiplicity <> Minf then
-              line := tile_id :: !line
-          end
-        done
+	for x' = 0 to tile.Tile.pattern.Pattern.width - 1 do
+	  if tile.Tile.pattern.Pattern.matrix.(y').(x') then begin
+	    line := get_id_col_emc problem (x + x') (y + y') :: !line;
+	    if tile.Tile.multiplicity <> Minf then
+	      line := tile_id :: !line
+	  end
+	done
       done;
       List.sort Pervasives.compare !line
 
@@ -409,20 +409,20 @@ width=\"%d\" height=\"%d\">@\n"
       let w = problem.grid.Pattern.width in
       let realn = ref 0 in
       for y = 0 to h - 1 do
-        for x = 0 to w - 1 do
-          if problem.grid.Pattern.matrix.(y).(x) then
-            incr realn
-        done
+	for x = 0 to w - 1 do
+	  if problem.grid.Pattern.matrix.(y).(x) then
+	    incr realn
+	done
       done;
       !realn
 
     let number_of_tile_columns problem =
       List.fold_left (
-        fun (prim, sec as acc) e ->
-          match e.Tile.multiplicity with
-            | Mone -> (prim + 1, sec)
+	fun (prim, sec as acc) e ->
+	  match e.Tile.multiplicity with
+	    | Mone -> (prim + 1, sec)
 	    | Mmaybe -> (prim, sec + 1)
-            | Minf -> acc
+	    | Minf -> acc
       ) (0, 0) problem.pieces
 
     type emc = {
@@ -434,16 +434,16 @@ width=\"%d\" height=\"%d\">@\n"
 
     let print_emc fmt emc =
       let rec print_line i = function
-        | _ when i = emc.columns -> ()
-        | c :: l when c = i -> fprintf fmt "1"; print_line (i + 1) l
-        | l -> fprintf fmt "0"; print_line (i + 1) l in
+	| _ when i = emc.columns -> ()
+	| c :: l when c = i -> fprintf fmt "1"; print_line (i + 1) l
+	| l -> fprintf fmt "0"; print_line (i + 1) l in
       Array.iter (print_line 0) emc.emc;
       fprintf fmt "%d primary columns" emc.primary
 
     let print_emc_size fmt emc =
       let h = Array.length emc.emc in
       fprintf fmt "%d rows x %d columns, with %d primary columns"
-        h emc.columns emc.primary
+	h emc.columns emc.primary
 
   (* return a boolean matrix representing the set of way to put all pieces
    * on the board
@@ -459,33 +459,33 @@ width=\"%d\" height=\"%d\">@\n"
       let lines = ref [] in
       let decodes = ref [] in
       let add_piece x y tile =
-        let tile_id = match tile.multiplicity with
-          | Mone -> let v = !tile_id_prim in incr tile_id_prim; v
-          | Mmaybe -> let v = !tile_id_sec in incr tile_id_sec; v
-          | Minf -> -1 (* useless *)
-        in
-        List.iter
-          (fun t ->
-            if is_possible_position t problem x y then begin
-              lines := one_line n tile_id t problem x y :: !lines;
-              decodes :=  (t, x, y) :: !decodes
-            end
-          )
-          (tile :: Tile.create_all_symmetries tile)
+	let tile_id = match tile.multiplicity with
+	  | Mone -> let v = !tile_id_prim in incr tile_id_prim; v
+	  | Mmaybe -> let v = !tile_id_sec in incr tile_id_sec; v
+	  | Minf -> -1 (* useless *)
+	in
+	List.iter
+	  (fun t ->
+	    if is_possible_position t problem x y then begin
+	      lines := one_line n tile_id t problem x y :: !lines;
+	      decodes :=  (t, x, y) :: !decodes
+	    end
+	  )
+	  (tile :: Tile.create_all_symmetries tile)
       in
       for y = 0 to h - 1 do
-        for x = 0 to w - 1 do
-          List.iter (add_piece x y) problem.pieces;
-          tile_id_prim := ncc;
-          tile_id_sec := ncc + prim
-        done
+	for x = 0 to w - 1 do
+	  List.iter (add_piece x y) problem.pieces;
+	  tile_id_prim := ncc;
+	  tile_id_sec := ncc + prim
+	done
       done;
       let matrix = Array.of_list !lines in
       let decode_tbl = Array.of_list !decodes in
       { columns = n;
-        primary = ncc + prim;
-        emc = matrix;
-        tiles = decode_tbl }
+	primary = ncc + prim;
+	emc = matrix;
+	tiles = decode_tbl }
 
     open Format
     open Pattern
@@ -547,10 +547,10 @@ module Tile3 = struct
     let m = Array.init new_d (fun _ -> Array.make_matrix new_h new_w false) in
     for z = 0 to d-1 do
       for y = 0 to h-1 do
-        for x = 0 to w-1 do
-          let new_x, new_y, new_z = trans ~w ~h ~d (x, y, z)  in
-          m.(new_z).(new_y).(new_x) <- p.pattern.(z).Pattern.matrix.(y).(x)
-        done
+	for x = 0 to w-1 do
+	  let new_x, new_y, new_z = trans ~w ~h ~d (x, y, z)  in
+	  m.(new_z).(new_y).(new_x) <- p.pattern.(z).Pattern.matrix.(y).(x)
+	done
       done
     done;
     let ml = Array.to_list m in
@@ -561,10 +561,10 @@ module Tile3 = struct
     match t.symmetries with
     | Snone -> [t]
     | Spositive | Sall ->
-        let h = Hashtbl.create 8 in
-        List.iter (fun iso -> Hashtbl.replace h (apply iso t) ())
-          Cube.positive;
-        Hashtbl.fold (fun k _ acc -> k :: acc) h []
+	let h = Hashtbl.create 8 in
+	List.iter (fun iso -> Hashtbl.replace h (apply iso t) ())
+	  Cube.positive;
+	Hashtbl.fold (fun k _ acc -> k :: acc) h []
 
 end
 
@@ -608,7 +608,7 @@ module Problem3 = struct
     let print_emc_size fmt emc =
       let h = Array.length emc.emc in
       fprintf fmt "%d rows x %d columns, with %d primary columns"
-        h (if h = 0 then 0 else Array.length emc.emc.(0)) emc.primary
+	h (if h = 0 then 0 else Array.length emc.emc.(0)) emc.primary
 
     open Pattern
     open Tile3
@@ -616,30 +616,30 @@ module Problem3 = struct
     let get_id_col_emc problem x y z =
       let id = ref 0 in
       try
-        for z' = 0 to problem.grid.depth - 1 do
-          for y' = 0 to problem.grid.height - 1 do
-            for x' = 0 to problem.grid.width - 1 do
-              if z' = z && y' = y && x' = x then raise Exit;
-              if problem.grid.pattern.(z').matrix.(y').(x') then
-                incr id
-            done
-          done
-        done;
-        !id
+	for z' = 0 to problem.grid.depth - 1 do
+	  for y' = 0 to problem.grid.height - 1 do
+	    for x' = 0 to problem.grid.width - 1 do
+	      if z' = z && y' = y && x' = x then raise Exit;
+	      if problem.grid.pattern.(z').matrix.(y').(x') then
+		incr id
+	    done
+	  done
+	done;
+	!id
       with Exit -> !id
 
     let one_line n tile_id tile problem ~x ~y ~z =
       let line = Array.make n false in
       for z' = 0 to tile.depth - 1 do
-        for y' = 0 to tile.height - 1 do
-          for x' = 0 to tile.width - 1 do
-            if tile.pattern.(z').matrix.(y').(x') then begin
-              line.(get_id_col_emc problem (x + x') (y + y') (z + z')) <- true;
-              if tile.Tile3.multiplicity <> Minf then
-                line.(tile_id) <- true
-            end
-          done
-        done
+	for y' = 0 to tile.height - 1 do
+	  for x' = 0 to tile.width - 1 do
+	    if tile.pattern.(z').matrix.(y').(x') then begin
+	      line.(get_id_col_emc problem (x + x') (y + y') (z + z')) <- true;
+	      if tile.Tile3.multiplicity <> Minf then
+		line.(tile_id) <- true
+	    end
+	  done
+	done
       done;
       line
 
@@ -650,23 +650,23 @@ module Problem3 = struct
       let d = problem.grid.depth in
       let realn = ref 0 in
       for z = 0 to d - 1 do
-        let m = problem.grid.pattern.(z).matrix in
-        for y = 0 to h - 1 do
-          for x = 0 to w - 1 do
-            if m.(y).(x) then
-              incr realn
-          done
-        done
+	let m = problem.grid.pattern.(z).matrix in
+	for y = 0 to h - 1 do
+	  for x = 0 to w - 1 do
+	    if m.(y).(x) then
+	      incr realn
+	  done
+	done
       done;
       !realn
 
     let number_of_tile_columns problem =
       List.fold_left (
-        fun (prim, sec as acc) e ->
-          match e.Tile3.multiplicity with
-            | Mone -> (prim + 1, sec)
+	fun (prim, sec as acc) e ->
+	  match e.Tile3.multiplicity with
+	    | Mone -> (prim + 1, sec)
 	    | Mmaybe -> (prim, sec + 1)
-            | Minf -> acc
+	    | Minf -> acc
       ) (0, 0) problem.pieces
 
     let existing_position problem x y z =
@@ -679,19 +679,19 @@ module Problem3 = struct
   (* return true if piece could be put at position x y*)
     let is_possible_position tile board x y z =
       try
-        for z' = 0 to tile.depth - 1 do
-          let m = tile.pattern.(z').matrix in
-          for y' = 0 to tile.height - 1 do
-            for x' = 0 to tile.width - 1 do
-              if m.(y').(x') &&
-                 not (existing_position board (x + x') (y + y') (z + z'))
-              then raise Exit
-            done
-          done
-        done;
-        true
+	for z' = 0 to tile.depth - 1 do
+	  let m = tile.pattern.(z').matrix in
+	  for y' = 0 to tile.height - 1 do
+	    for x' = 0 to tile.width - 1 do
+	      if m.(y').(x') &&
+		 not (existing_position board (x + x') (y + y') (z + z'))
+	      then raise Exit
+	    done
+	  done
+	done;
+	true
       with
-        | Exit ->  false
+	| Exit ->  false
 
     let make problem =
       let h = problem.grid.height in
@@ -705,39 +705,39 @@ module Problem3 = struct
       let lines = ref [] in
       let decodes = ref [] in
       let add_piece x y z tile =
-        let tile_id = match tile.multiplicity with
-          | Mone -> let v = !tile_id_prim in incr tile_id_prim; v
-          | Mmaybe -> let v = !tile_id_sec in incr tile_id_sec; v
-          | Minf -> -1 (* useless *)
-        in
-        List.iter
-          (fun t ->
-            if is_possible_position t problem x y z then begin
-              lines := one_line n tile_id t problem x y z :: !lines;
-              decodes :=  (t, x, y, z) :: !decodes
-            end
-          )
-          (tile :: Tile3.create_all_symmetries tile)
+	let tile_id = match tile.multiplicity with
+	  | Mone -> let v = !tile_id_prim in incr tile_id_prim; v
+	  | Mmaybe -> let v = !tile_id_sec in incr tile_id_sec; v
+	  | Minf -> -1 (* useless *)
+	in
+	List.iter
+	  (fun t ->
+	    if is_possible_position t problem x y z then begin
+	      lines := one_line n tile_id t problem x y z :: !lines;
+	      decodes :=  (t, x, y, z) :: !decodes
+	    end
+	  )
+	  (tile :: Tile3.create_all_symmetries tile)
       in
       for z = 0 to d - 1 do
-        for y = 0 to h - 1 do
-          for x = 0 to w - 1 do
-            List.iter (add_piece x y z) problem.pieces;
-            tile_id_prim := ncc;
-            tile_id_sec := ncc + prim
-          done
-        done
+	for y = 0 to h - 1 do
+	  for x = 0 to w - 1 do
+	    List.iter (add_piece x y z) problem.pieces;
+	    tile_id_prim := ncc;
+	    tile_id_sec := ncc + prim
+	  done
+	done
       done;
       let matrix = Array.of_list !lines in
       let decode_tbl = Array.of_list !decodes in
       { primary = ncc + prim;
-        emc = matrix;
-        tiles = decode_tbl }
+	emc = matrix;
+	tiles = decode_tbl }
 
     let print_solution_ascii fmt p emc rows =
       let print r =
-        let t, x, y, z = emc.tiles.(r) in
-        fprintf fmt "tile '%s' at (%d, %d, %d)@\n" t.name x y z in
+	let t, x, y, z = emc.tiles.(r) in
+	fprintf fmt "tile '%s' at (%d, %d, %d)@\n" t.name x y z in
       List.iter print rows
 
   end
@@ -764,10 +764,11 @@ module FourColoring = struct
 
   type graph = {
     grid : Pattern.t;
-    adj : (node * (node list)) list
+    nodes : node array;
+    adj : (int list) array
   }
 
-  let mk_graph grid adj = {grid; adj}
+  let mk_graph grid nodes adj = {grid; nodes; adj}
 
 
   type color = int
@@ -779,9 +780,9 @@ module FourColoring = struct
     let res = ref [] in
     for y' = 0 to t.Tile.pattern.height - 1 do
       for x' = 0 to t.Tile.pattern.width - 1 do
-        if t.Tile.pattern.matrix.(y').(x') then
-          let cell = ((x + x'),(height - 1 - (y + y'))) in
-          res := cell::!res
+	if t.Tile.pattern.matrix.(y').(x') then
+	  let cell = ((x + x'),(height - 1 - (y + y'))) in
+	  res := cell::!res
       done
     done;
     !res;;
@@ -792,22 +793,49 @@ module FourColoring = struct
       && grid.Pattern.matrix.(y).(x)
 
   let get_neighbours_raw (i : int) (j : int) = [(i-1,j);(i+1,j);(i,j-1);(i,j+1)];;
-  let get_neighbours grid i j =
+  let get_neighbours grid i j : cell list =
     List.filter
-      (fun (i1,j1) -> valid_cell grid i1 j1)
-      (get_neighbours_raw i j);;
+      (fun (i1,j1) -> valid_cell grid i1 j1) @@ get_neighbours_raw i j;;
 
-  let get_tile_cell_graph (s : Problem.solution) : (node * (cell list)) list =
+  let get_tile_cell_graph (grid : Pattern.t) (s : Problem.solution) =
     let reverse_map = Hashtbl.create 100 in
-    let all_cells grid x y t = get_cells grid.Pattern.height x y t in
-    let all_outside_neighbours grid all_cells =
-      List.concat
-        (List.map (fun (i,j) -> get_neighbours grid i j) all_cells) in
-    raise Not_found;;
+    let all_cells grid x y t id =
+      let res = get_cells grid.Pattern.height x y t in
+      List.iter (fun cell -> Hashtbl.add reverse_map cell id) res; res in
+    let all_outside_neighbours grid all_cells : cell list =
+      let pre_res = List.concat
+	(List.map (fun (i,j) -> get_neighbours grid i j) all_cells)
+      in
+      List.filter (fun c -> not(List.mem c all_cells)) pre_res in
+    (List.mapi
+       (fun i (t,x,y) ->
+	 let node = { id = i; tile = t; x = x; y = y} in
+	 (node,all_outside_neighbours grid (all_cells grid x y t i))
+       )
+       s, reverse_map)
 
+  (* our graphs here are undirected *)
+  let rev_edge (a,b) = (b,a)
+  let add_edge t (a,b) = t.(a) <- b::t.(a); t.(b) <- a::t.(a)
+  let has_edge t ((a,b) : int*int) = List.mem b t.(a)
 
-  let get_graph (s : Problem.solution) = raise Not_found;;
-
+  let get_graph (p : Problem.problem) (s : Problem.solution) =
+    let size_graph = List.length s in
+    let adj_tab = Array.make size_graph ([] : int list) in
+    let tile_cell_graph,reverse_map = get_tile_cell_graph p.grid s in
+    let nodes =
+    List.map
+      (fun (node,adj) ->
+	List.iter (fun c -> let (edge : int*int) = (node.id,Hashtbl.find reverse_map c) in
+			    if not(has_edge adj_tab edge)
+			    then
+			      add_edge adj_tab edge)
+	  adj; node) tile_cell_graph in
+    {
+      grid  = p.grid;
+      nodes = Array.of_list nodes;
+      adj = adj_tab
+    }
 
   (* Solving by emc
      as we said in the bus
@@ -818,7 +846,7 @@ module FourColoring = struct
      In the sparse :
      - List.hd line  -> the current node
      - the chosen color for the node is the integer in the
-        interval : [node * 4 +size ; node * 4 + size + color[
+	interval : [node * 4 +size ; node * 4 + size + color[
 
      And it's not only easier, it's necessary to put the boolean for the current
      node at the beggining because those columns are primary.
@@ -827,29 +855,30 @@ module FourColoring = struct
   *)
   let create_line size node color neighbors =
     node.id :: (size + node.id * 4 + color) ::
-    List.map (fun n -> size + n.id * 4 + color) neighbors
+    List.map (fun n -> size + n * 4 + color) neighbors
     |> List.sort compare
 
 
   let extract_coloring size sparse solution : (int * int) list =
     List.fold_left (fun colors ln ->
-        let a = sparse.(ln) in
-        let node = List.hd a in
-        let nodeloc = node * 4 + size in
-        let color = List.find (fun x -> x >= nodeloc && x < nodeloc + 4) a - nodeloc in
-        (node, color) :: colors
+	let a = sparse.(ln) in
+	let node = List.hd a in
+	let nodeloc = node * 4 + size in
+	let color = List.find (fun x -> x >= nodeloc && x < nodeloc + 4) a - nodeloc in
+	(node, color) :: colors
       ) [] solution
 
 
 
   let solve (g: graph) =
     (* Should we store the number of nodes ? *)
-    let primary = List.length g.adj in
-    let sparse = Array.of_list @@ List.fold_left (
-        fun lines (node, neighbors) ->
-          let cl c = create_line primary node c neighbors in
-          cl 0 :: cl 1 :: cl 2 :: cl 3 :: lines
-      ) [] g.adj
+    let primary = Array.length g.nodes in
+    let sparse = Array.of_list @@ snd @@ Array.fold_left (
+	fun (i,lines) neighbors ->
+	  let node = g.nodes.(i) in
+	  let cl c = create_line primary node c neighbors in
+	  (i+1,cl 0 :: cl 1 :: cl 2 :: cl 3 :: lines)
+      ) (0,[]) g.adj
     in
     let emc = Emc.D.create_sparse ~primary ~columns:(primary*5) sparse in
     let solution = Emc.D.find_solution emc in

@@ -60,7 +60,7 @@ module Pattern : sig
 
   val union: t -> t -> t
     (** [union p1 p2] creates a pattern from the logical union beetween [p1] and
-        [p2] *)
+	[p2] *)
 
   val inter: t -> t -> t
     (** [inter p1 p2] creates a pattern from the logical intersection
@@ -97,8 +97,8 @@ module Tile : sig
 
   val create: ?name:string -> ?s:symmetries -> ?m:multiplicity -> Pattern.t -> t
     (** construct a tile from his name, its symmetries [s] and
-        its multiplicity [m]. [s] defaults to [Snone] and [m] defaults
-        to [Minf] *)
+	its multiplicity [m]. [s] defaults to [Snone] and [m] defaults
+	to [Minf] *)
 
   val dummy : unit -> t
 
@@ -252,13 +252,13 @@ module FourColoring : sig
   (*   adj : (node * (node list)) list *)
   (* } *)
 
-  val mk_graph : Pattern.t -> (node * (node list)) list -> graph
+  val mk_graph : Pattern.t -> node array -> int list array -> graph
 
   type coloring
 
-  val get_graph : Problem.solution -> graph
+  val get_graph : Problem.problem -> Problem.solution -> graph
 
-  val create_line : int -> node -> int -> node list -> int list
+  val create_line : int -> node -> int -> int list -> int list
   val extract_coloring : int -> int list array -> int list -> (int * int) list
 
   val solve : graph -> (int * int) list
