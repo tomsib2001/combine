@@ -37,8 +37,11 @@ module Pattern : sig
     size   : int;
   }
 
+
   val create: bool array array -> t
     (** [create m] creates a pattern of type t from a boolean matrix *)
+
+  val dummy : unit -> t
 
   val apply: D4.t -> t -> t
     (** [apply i p] creates a new pattern which is the result of the
@@ -96,6 +99,8 @@ module Tile : sig
     (** construct a tile from his name, its symmetries [s] and
         its multiplicity [m]. [s] defaults to [Snone] and [m] defaults
         to [Minf] *)
+
+  val dummy : unit -> t
 
   val apply: D4.t -> t -> t
     (** [apply i t] creates a new tile by applying transformation [i] to [t] *)
@@ -234,10 +239,13 @@ end
 module FourColoring : sig
 
   type node = {
+    id : int;
     tile : Tile.t;
     x : int;
     y : int;
   }
+
+  val mk_node : ?id:int -> Tile.t -> int -> int -> node
 
   type graph (* = { *)
   (*   matrix : Pattern.t; *)
@@ -247,5 +255,9 @@ module FourColoring : sig
   type coloring
 
   val get_graph : Problem.solution -> graph
+
+  val create_line : int -> node -> int -> node list -> int list
+  val extract_coloring : int -> int list array -> int list -> (int * int) list
+
   val solve : graph -> coloring option
 end

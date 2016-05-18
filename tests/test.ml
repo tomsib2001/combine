@@ -138,6 +138,20 @@ let () =
 
 
 
+let () =
+  let open Tiling in
+  let open Tiling.FourColoring in
+  let t = Tile.dummy () in
+  let color = 1 in
+  let n0 = mk_node ~id:0 t 0 0 in
+  let n1 = mk_node ~id:1 t 0 0 in
+  let n2 = mk_node ~id:2 t 0 0 in
+  let n3 = mk_node ~id:3 t 0 0 in
+  let line = create_line 4 n2 color [n0; n1; n3] in
+  assert (line = [2; 5; 9; 13; 17]);
+  assert ([n2.id, color] = extract_coloring 4 (Array.make 1 line) [0])
+
+
 (*
 
 let () = printf "%a\n@." Pattern.print (Pattern.shift p 1 1)

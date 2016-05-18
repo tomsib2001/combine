@@ -41,6 +41,8 @@ module Pattern = struct
       width = Array.length g.(0);
       size = compute_size g }
 
+  let dummy () = create @@ Array.make_matrix 2 2 false
+
   let apply iso p =
     let trans = D4.apply iso in
     let w, h = p.width, p.height in
@@ -149,6 +151,7 @@ module Tile = struct
     isos   : D4.subgroup;   (* the pattern is invariant by these isometries *)
   }
 
+
   let print fmt t =
     if t.name <> "" then Format.fprintf fmt "tile %S@\n" t.name;
     Format.fprintf fmt "%a@\n" Pattern.print t.pattern;
@@ -163,6 +166,8 @@ module Tile = struct
       multiplicity = m;
       symmetries = s;
       isos = D4.subgroup (Pattern.get_isos p); }
+
+  let dummy () = create (Pattern.dummy ())
 
   let apply iso t =
     if D4.S.mem iso (D4.elements t.isos) then t
@@ -743,9 +748,17 @@ end
 module FourColoring = struct
 
   type node = {
+    id : int;
     tile : Tile.t;
     x : int;
     y : int;
+  }
+
+  let node_cnt = ref 0
+
+  let mk_node ?id tile x y = {
+    id = (match id with Some id -> id | None -> (incr node_cnt; !node_cnt));
+    tile; x; y
   }
 
   type graph = {
@@ -753,17 +766,19 @@ module FourColoring = struct
     adj : (node * (node list)) list
   }
 
+
   type color = int
   type coloring = (node * color) list
   type cell = int*int
 
   let get_cells height x y (t : Tile.t) =
+    let open Pattern in
     let res = ref [] in
     for y' = 0 to t.Tile.pattern.height - 1 do
       for x' = 0 to t.Tile.pattern.width - 1 do
-	if t.Tile.pattern.matrix.(y').(x') then
-	  let cell = ((x + x'),(height - 1 - (y + y'))) in
-	  res := cell::!res
+        if t.Tile.pattern.matrix.(y').(x') then
+          let cell = ((x + x'),(height - 1 - (y + y'))) in
+          res := cell::!res
       done
     done;
     !res;;
@@ -784,12 +799,59 @@ module FourColoring = struct
     let all_cells grid x y t = get_cells grid.Pattern.height x y t in
     let all_outside_neighbours grid all_cells =
       List.concat
-	(List.map (fun (i,j) -> get_neighbours grid i j) all_cells) in
+        (List.map (fun (i,j) -> get_neighbours grid i j) all_cells) in
     raise Not_found;;
 
 
   let get_graph (s : Problem.solution) = raise Not_found;;
 
-  let solve (g: graph) = None
+
+  (* Solving by emc
+     as we said in the bus
+     - the n firsts bool corresponds to the choice of the node
+     - the n * 4 nexts are coloration constraint for the node and its neighbors
+
+     This version is easier for extracting the solution than the n * 5 boolean. In the sparse :
+     - List.hd line  -> the current node
+     - the chosen color for the node is the integer in the
+        interval : [node * 4 +size ; node * 4 + size + color[
+
+     see example at the end of tests/test.ml
+  *)
+  let create_line size node color neighbors =
+    node.id :: (size + node.id * 4 + color) ::
+    List.map (fun n -> size + n.id * 4 + color) neighbors
+    |> List.sort compare
+
+
+  let extract_coloring size sparse solution : (int * int) list =
+    List.fold_left (fun colors ln ->
+        let a = sparse.(ln) in
+        let node = List.hd a in
+        let nodeloc = node * 4 + size in
+        let color = List.find (fun x -> x >= nodeloc && x < nodeloc + 4) a - nodeloc in
+        (node, color) :: colors
+      ) [] solution
+
+
+
+  let solve (g: graph) =
+    (* Should we precalculate the number of nodes ? *)
+    let columns = List.length g.adj in
+    let sparse = Array.of_list @@ List.fold_left (
+        fun lines (node, neighbors) ->
+          let cl c = create_line columns node c neighbors in
+          cl 0 :: cl 1 :: cl 2 :: cl 3 :: lines
+      ) [] g.adj
+    in
+    let emc = Emc.D.create_sparse ~columns sparse in
+    let solution = Emc.D.find_solution emc in
+    let coloring = extract_coloring columns sparse solution in
+    (* (int * int) list *)
+    None
+
+
+
+
 
 end;;
