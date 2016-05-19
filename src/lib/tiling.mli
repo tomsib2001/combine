@@ -263,4 +263,8 @@ module FourColoring : sig
   val extract_coloring : graph -> int -> int list array -> int list -> (node * int) list
 
   val solve : graph -> (node * color) list
+
+  val print_solution_to_svg_four_colors : Format.formatter ->
+    width:int ->
+    height:int -> Problem.problem -> Problem.solution -> unit
 end

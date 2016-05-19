@@ -788,7 +788,8 @@ module FourColoring = struct
     !res;;
 
   let valid_cell grid x y =
-      x < grid.Pattern.width
+      0 <= x && 0 <= y
+      && x < grid.Pattern.width
       && y < grid.Pattern.height
       && grid.Pattern.matrix.(y).(x)
 
