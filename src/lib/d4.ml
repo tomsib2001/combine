@@ -19,13 +19,13 @@
 
 
 type t = Id | Rot90 | Rot180 | Rot270 | VertRefl | HorizRefl |
-    Diag1Refl | Diag2Refl
+         Diag1Refl | Diag2Refl
 
 type iso = t
 
 let compose i1 i2 = match i1, i2 with
   | Id, a | a, Id -> a
-    (* rotations *)
+  (* rotations *)
   | Rot90, Rot270
   | Rot270, Rot90
   | Rot180, Rot180 -> Id
@@ -35,7 +35,7 @@ let compose i1 i2 = match i1, i2 with
   | Rot270, Rot270 -> Rot180
   | Rot180, Rot90
   | Rot90, Rot180 -> Rot270
-    (* reflections *)
+  (* reflections *)
   | VertRefl, VertRefl
   | HorizRefl, HorizRefl
   | Diag1Refl, Diag1Refl
@@ -52,7 +52,7 @@ let compose i1 i2 = match i1, i2 with
   | Diag2Refl, VertRefl
   | VertRefl, Diag1Refl
   | Diag1Refl, HorizRefl -> Rot270
-    (* rotation/reflection *)
+  (* rotation/reflection *)
   | Rot90, VertRefl
   | Rot270, HorizRefl
   | Rot180, Diag2Refl
@@ -100,12 +100,12 @@ module S = Set.Make (
 let all =
   ( S.add Id
       ( S.add Rot90
-	  ( S.add Rot270
-	      ( S.add Rot180
-		  ( S.add VertRefl
-		      ( S.add HorizRefl
-			  ( S.add Diag2Refl
-			      ( S.add Diag1Refl S.empty))))))))
+          ( S.add Rot270
+              ( S.add Rot180
+                  ( S.add VertRefl
+                      ( S.add HorizRefl
+                          ( S.add Diag2Refl
+                              ( S.add Diag1Refl S.empty))))))))
 
 let is_positive = function
   | Id | Rot90 | Rot180 | Rot270 -> true
@@ -116,9 +116,9 @@ let is_positive = function
 (* 1. positivity rules *)
 let () =
   S.iter (fun a ->
-    S.iter (fun b -> assert (
-      is_positive (compose a b) = (is_positive a = is_positive b))
-    ) all ) all
+      S.iter (fun b -> assert (
+          is_positive (compose a b) = (is_positive a = is_positive b))
+        ) all ) all
 
 (* 2. compose is associative *)
 let () =

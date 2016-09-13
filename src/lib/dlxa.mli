@@ -29,20 +29,20 @@
 *)
 
 type t
-  (** The internal data structure for DLX *)
+(** The internal data structure for DLX *)
 
 val create: ?primary:int -> bool array array -> t
-  (** Creates a DLX data structure from a matrix of Boolean values.
-      The purpose of DLX is to solve the Exact Matrix Cover problem
-      for this matrix, that is to find one (or all) subsets of rows
-      such that each column contains exactly one value [true] for primary
-      columns and at most one [true] value for secondary columns.
+(** Creates a DLX data structure from a matrix of Boolean values.
+    The purpose of DLX is to solve the Exact Matrix Cover problem
+    for this matrix, that is to find one (or all) subsets of rows
+    such that each column contains exactly one value [true] for primary
+    columns and at most one [true] value for secondary columns.
 
-      If [primary] is given, it means that the first [primary] columns are
-      primary; otherwise, all columns are primary columns. *)
+    If [primary] is given, it means that the first [primary] columns are
+    primary; otherwise, all columns are primary columns. *)
 
 val create_sparse: ?primary:int -> columns:int -> int list array -> t
 
 val count_solutions: t -> int
-  (** Returns the number of solutions. *)
+(** Returns the number of solutions. *)
 

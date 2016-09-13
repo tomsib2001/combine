@@ -121,14 +121,14 @@ let create_sparse ?primary ~columns:nc a =
   { header = h; nc = nc; }
 
 (* test create_sparse using create
-let create ?primary m =
-  let nc = Array.length m.(0) in
-  let row a =
+   let create ?primary m =
+   let nc = Array.length m.(0) in
+   let row a =
     let r = ref [] in
     Array.iteri (fun i b -> if b then r := i :: !r) a;
     !r
-  in
-  create_sparse ?primary ~columns:nc (Array.map row m)
+   in
+   create_sparse ?primary ~columns:nc (Array.map row m)
 *)
 
 (* Applies f to elements of the DLM, from up to down*)
@@ -165,7 +165,7 @@ let iter_up ?(self = true) f n =
   rec_iter_up n.up
 
 (* Removes the given column and all rows in column own list from
- the DLM*)
+   the DLM*)
 let cover column_header =
   column_header.right.left <- column_header.left;
   column_header.left.right <- column_header.right;
@@ -180,7 +180,7 @@ let cover column_header =
   iter_down ~self:false cover_row column_header
 
 (* Un-removes the given column and all rows in column own list from
- the DLM*)
+   the DLM*)
 let uncover column_header =
   let uncover_node n =
     n.c.s <- n.c.s + 1;
@@ -223,9 +223,9 @@ let rec search f k h o =
       search f (k + 1) h o;
       iter_left ~self:false (fun j -> uncover j.c) r
     in
-      cover column;
-      iter_down ~self:false get_down column;
-      uncover column
+    cover column;
+    iter_down ~self:false get_down column;
+    uncover column
 
 type solution = node array * int
 
@@ -265,4 +265,4 @@ let get_first_solution m =
     iter_solution (fun s -> raise (Solution s)) m;
     raise Not_found
   with
-    | Solution s -> s
+  | Solution s -> s

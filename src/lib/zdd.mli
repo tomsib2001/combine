@@ -26,12 +26,12 @@ type t = private Bottom | Top | Node of unique * int * t * t
 val bottom: t
 val top: t
 val construct: int -> t -> t -> t
-  (** Smart constructors for ZDD.
-      [construct i z1 z2] raises [Invalid_argument] if [i] is not
-      smaller than roots of [z1] and [z2]. *)
+(** Smart constructors for ZDD.
+    [construct i z1 z2] raises [Invalid_argument] if [i] is not
+    smaller than roots of [z1] and [z2]. *)
 
 val unique: t -> int
-  (** Each ZDD has a unique integer *)
+(** Each ZDD has a unique integer *)
 
 (** {2 A ZDD represents a set of sets of integers.}
     Hence this module provides all operations from OCaml's [Set],
@@ -92,19 +92,19 @@ module Cardinal(A: ARITH) : sig val cardinal: t -> A.t end
 (** {2 Other functions} *)
 
 val size: t -> int
-  (** Number of internal nodes of a given ZDD.
-      Each node occupies 5 words, so the total space used by a ZDD [z]
-      is [size z * 5 * Sys.word_size/8] bytes. *)
+(** Number of internal nodes of a given ZDD.
+    Each node occupies 5 words, so the total space used by a ZDD [z]
+    is [size z * 5 * Sys.word_size/8] bytes. *)
 
 val print: Format.formatter -> t -> unit
-  (** Prints a ZDD as a set of sets of integers, e.g. [{ {0}, {1}, {1,2} }]. *)
+(** Prints a ZDD as a set of sets of integers, e.g. [{ {0}, {1}, {1,2} }]. *)
 
 val print_to_dot: Format.formatter -> t -> unit
-  (** [print_to_dot fmt z] prints a ZDD [z] in DOT format *)
+(** [print_to_dot fmt z] prints a ZDD [z] in DOT format *)
 
 val print_to_dot_file: string -> t -> unit
-  (** [print_to_dot f z] outputs ZDD [z] in DOT format in file [f] *)
+(** [print_to_dot f z] outputs ZDD [z] in DOT format in file [f] *)
 
 val stat: unit -> int
-  (** Returns the total number of unique ZDD built so far *)
+(** Returns the total number of unique ZDD built so far *)
 

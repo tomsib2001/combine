@@ -24,8 +24,8 @@ open Format
 type unique = int
 
 (* invariant:
- - elements increase when we descend in subtrees
- - the right subtree of a ZDD is never Bottom *)
+   - elements increase when we descend in subtrees
+   - the right subtree of a ZDD is never Bottom *)
 type t = Bottom | Top | Node of unique * int * t * t
 type zdd = t
 
@@ -63,7 +63,7 @@ module HashedZdd = struct
     | Top, Top
     | Bottom, Bottom -> true
     | Node (_, i1, l1, r1), Node (_, i2, l2, r2) ->
-        i1 = i2 && unique l1 = unique l2 && unique r1 = unique r2
+      i1 = i2 && unique l1 = unique l2 && unique r1 = unique r2
     | _ -> false
 end
 
@@ -89,8 +89,8 @@ module Weaktbl = struct
     let rec fold_bucket i b accu =
       if i >= Weak.length b then accu else
         match Weak.get b i with
-          | Some v -> fold_bucket (i+1) b (f v accu)
-          | None -> fold_bucket (i+1) b accu
+        | Some v -> fold_bucket (i+1) b (f v accu)
+        | None -> fold_bucket (i+1) b accu
     in
     Array.fold_right (fold_bucket 0) t.table init
 
@@ -134,26 +134,26 @@ module Weaktbl = struct
 
   let hashconstruct t v z1 z2 =
     if z2 = Bottom then z1 else
-    let index = (hash_node v z1 z2) mod (Array.length t.table) in
-    let bucket = t.table.(index) in
-    let sz = Weak.length bucket in
-    let rec loop i =
-      if i >= sz then begin
-        let hnode = Node (!unique_ref, v, z1, z2) in
-        incr unique_ref;
-        add_index t hnode index;
-        hnode
-      end else begin
-        match Weak.get_copy bucket i with
+      let index = (hash_node v z1 z2) mod (Array.length t.table) in
+      let bucket = t.table.(index) in
+      let sz = Weak.length bucket in
+      let rec loop i =
+        if i >= sz then begin
+          let hnode = Node (!unique_ref, v, z1, z2) in
+          incr unique_ref;
+          add_index t hnode index;
+          hnode
+        end else begin
+          match Weak.get_copy bucket i with
           | Some Node(_, v', z1', z2') when v==v' && z1==z1' && z2==z2' ->
-              begin match Weak.get bucket i with
-                | Some v -> v
-                | None -> loop (i+1)
-              end
+            begin match Weak.get bucket i with
+              | Some v -> v
+              | None -> loop (i+1)
+            end
           | _ -> loop (i+1)
-      end
-    in
-    loop 0
+        end
+      in
+      loop 0
 
 end
 
@@ -196,11 +196,11 @@ let construct i z1 z2 =
 (* z1 = z2 iff z1 == z2 iff unique z1 = unique z2 *)
 
 module H1 = Hashtbl.Make
-  (struct
-     type t = zdd
-     let hash = unique
-     let equal = (==)
-   end)
+    (struct
+      type t = zdd
+      let hash = unique
+      let equal = (==)
+    end)
 
 let memo_rec1 f =
   let h = H1.create 17 in
@@ -211,10 +211,10 @@ let memo_rec1 f =
   g
 
 let cardinal = memo_rec1 (
-  fun cardinal -> function
-    | Top -> 1
-    | Bottom -> 0
-    | Node(_, i, z1, z2) -> cardinal z1 + cardinal z2
+    fun cardinal -> function
+      | Top -> 1
+      | Bottom -> 0
+      | Node(_, i, z1, z2) -> cardinal z1 + cardinal z2
   )
 
 module type ARITH = sig
@@ -227,19 +227,19 @@ end
 module Cardinal(A: ARITH) : sig val cardinal: zdd -> A.t end = struct
 
   let cardinal = memo_rec1 (
-    fun cardinal -> function
-      | Top -> A.one
-      | Bottom -> A.zero
-      | Node(_, _, z1, z2) -> A.add (cardinal z1) (cardinal z2))
+      fun cardinal -> function
+        | Top -> A.one
+        | Bottom -> A.zero
+        | Node(_, _, z1, z2) -> A.add (cardinal z1) (cardinal z2))
 
 end
 
 module H2 = Hashtbl.Make
-  (struct
-     type t = zdd * zdd
-     let hash (z1, z2) = (19 * unique z1 + unique z2) land max_int
-     let equal (z11, z12) (z21, z22) = z11 == z21 && z12 == z22
-   end)
+    (struct
+      type t = zdd * zdd
+      let hash (z1, z2) = (19 * unique z1 + unique z2) land max_int
+      let equal (z11, z12) (z21, z22) = z11 == z21 && z12 == z22
+    end)
 
 let memo_rec2 f =
   let h = H2.create hsize in
@@ -250,13 +250,13 @@ let memo_rec2 f =
   g
 
 let inter = memo_rec2 (
-  fun inter -> function
-    | Node(_, _, z1, _), Top
-    | Top, Node(_, _, z1, _) -> inter (z1, Top)
-    | Top, Top -> Top
-    | Bottom, _
-    | _, Bottom -> Bottom
-    | (Node (u1, i1, l1, r1) as z1),
+    fun inter -> function
+      | Node(_, _, z1, _), Top
+      | Top, Node(_, _, z1, _) -> inter (z1, Top)
+      | Top, Top -> Top
+      | Bottom, _
+      | _, Bottom -> Bottom
+      | (Node (u1, i1, l1, r1) as z1),
         (Node (u2, i2, l2, r2) as z2) ->
         if i1 = i2 then
           construct i1 (inter (l1, l2)) (inter (r1, r2))
@@ -270,13 +270,13 @@ let inter z1 z2 =
   inter (z1, z2)
 
 let union = memo_rec2 (
-  fun union -> function
-    | Node(_, i, z1, z2), Top
-    | Top, Node(_, i, z1, z2) -> construct i (union (z1, Top)) z2
-    | Top, Top -> Top
-    | Bottom, z
-    | z, Bottom -> z
-    | (Node (_, i1, l1, r1) as z1), (Node (_, i2, l2, r2) as z2) ->
+    fun union -> function
+      | Node(_, i, z1, z2), Top
+      | Top, Node(_, i, z1, z2) -> construct i (union (z1, Top)) z2
+      | Top, Top -> Top
+      | Bottom, z
+      | z, Bottom -> z
+      | (Node (_, i1, l1, r1) as z1), (Node (_, i2, l2, r2) as z2) ->
         if i1 = i2 then
           construct i1 (union (l1, l2)) (union (r1, r2))
         else if i1 > i2 then
@@ -289,13 +289,13 @@ let union z1 z2 =
   union (z1, z2)
 
 let diff = memo_rec2 (
-  fun diff -> function
-    | Node(_, i, z1, z2), Top -> construct i (diff (z1, Top)) z2
-    | Top, Node(_, _, z1, _) -> diff (Top, z1)
-    | Top, Top
-    | Bottom, _ -> Bottom
-    | z, Bottom -> z
-    | (Node (_, i1, l1, r1) as z1), (Node (_, i2, l2, r2) as z2) ->
+    fun diff -> function
+      | Node(_, i, z1, z2), Top -> construct i (diff (z1, Top)) z2
+      | Top, Node(_, _, z1, _) -> diff (Top, z1)
+      | Top, Top
+      | Bottom, _ -> Bottom
+      | z, Bottom -> z
+      | (Node (_, i1, l1, r1) as z1), (Node (_, i2, l2, r2) as z2) ->
         if i1 = i2 then
           construct i1 (diff (l1, l2)) (diff (r1, r2))
         else if i1 > i2 then
@@ -308,11 +308,11 @@ let diff z1 z2 =
   diff (z1, z2)
 
 let subset = memo_rec2 (
-  fun subset -> function
-    | Bottom, _ | Top, Top -> true
-    | _, Bottom | Node _, Top -> false
-    | Top, Node(_, _, z1, _) -> subset (Top, z1)
-    | (Node (_, i1, l1, r1) as z1), Node (_, i2, l2, r2) ->
+    fun subset -> function
+      | Bottom, _ | Top, Top -> true
+      | _, Bottom | Node _, Top -> false
+      | Top, Node(_, _, z1, _) -> subset (Top, z1)
+      | (Node (_, i1, l1, r1) as z1), Node (_, i2, l2, r2) ->
         if i1 = i2 then
           subset (l1, l2) && subset (r1, r2)
         else if i1 > i2 then
@@ -331,8 +331,8 @@ let singleton s =
   let elts = S.elements s in
   let rec singleton =
     function
-      | [] -> Top
-      | h::t -> construct h Bottom (singleton t)
+    | [] -> Top
+    | h::t -> construct h Bottom (singleton t)
   in
   singleton elts
 
@@ -344,11 +344,11 @@ let remove s z =
     | [], Top -> Bottom
     | [], Node (_, _ ,z1, _ ) -> remove [] z1
     | h::t, Node(_, i, z1, z2) ->
-        if i = h then begin
-          construct i z1 (remove t z2) end
-        else if h > i then
-          construct i (remove elts z1) z2
-        else z
+      if i = h then begin
+        construct i z1 (remove t z2) end
+      else if h > i then
+        construct i (remove elts z1) z2
+      else z
     | _ -> z
   in
   remove elts z
@@ -359,9 +359,9 @@ let mem s z =
     | [], Top -> true
     | [], Node (_, _ ,z1, _ ) -> mem [] z1
     | h :: t, Node(_, i, z1, z2) ->
-        if h = i then mem t z2
-        else if h > i then mem l z1
-        else false
+      if h = i then mem t z2
+      else if h > i then mem l z1
+      else false
     | _ -> false
   in
   mem l z
@@ -373,8 +373,8 @@ let size z =
     if not (H1.mem h z) then begin
       H1.add h z ();
       match z with
-        | Bottom | Top -> ()
-        | Node (_, _, l, r) -> incr s; visit l; visit r
+      | Bottom | Top -> ()
+      | Node (_, _, l, r) -> incr s; visit l; visit r
     end
   in
   visit z;
@@ -391,9 +391,9 @@ let choose zdd =
 let random_chose zdd =
   let rec any_element zdd s = match zdd with
     | Node (_, i, z1, z2) ->
-        let z = if Random.bool () && not (equal z1 Bottom) then z1
+      let z = if Random.bool () && not (equal z1 Bottom) then z1
         else if not (equal z2 Bottom) then z2 else z1 in
-        any_element z (S.add i s)
+      any_element z (S.add i s)
     | Top -> s
     | Bottom -> raise Not_found
   in
@@ -406,7 +406,7 @@ let iter_list f zdd =
     | Top -> f l
     | Bottom -> ()
     | Node (_, i, z1, z2)-> iter_element f l z1 ;
-                            iter_element f (i :: l) z2
+      iter_element f (i :: l) z2
   in
   iter_element f [] zdd
 
@@ -415,7 +415,7 @@ let iter f zdd =
     | Top -> f s
     | Bottom -> ()
     | Node (_, i, z1, z2)-> iter_element f s z1 ;
-                            iter_element f (S.add i s) z2
+      iter_element f (S.add i s) z2
   in
   iter_element f S.empty zdd
 
@@ -424,8 +424,8 @@ let fold f zdd acc =
     | Top -> f s acc
     | Bottom -> acc
     | Node (_, i, z1, z2)->
-        let acc = fold f s acc z1 in
-        fold f (S.add i s) acc z2
+      let acc = fold f s acc z1 in
+      fold f (S.add i s) acc z2
   in
   fold f S.empty acc zdd
 
@@ -434,14 +434,14 @@ let for_all f zdd =
     iter (fun e -> if not (f e) then raise Exit) zdd;
     true
   with
-    | Exit -> false
+  | Exit -> false
 
 let exists f zdd =
   try
     iter (fun e -> if f e then raise Exit) zdd;
     false
   with
-    | Exit -> true
+  | Exit -> true
 
 let filter p zdd =
   let z = ref Bottom in
@@ -459,10 +459,10 @@ let split x z =
   let z2 = ref Bottom in
   let present = ref false in
   iter (fun e ->
-          let c = S.compare e x in
-          if c < 0 then z1 := add e !z1
-          else if c = 0 then present := true
-          else z2 := add e !z2) z;
+      let c = S.compare e x in
+      if c < 0 then z1 := add e !z1
+      else if c = 0 then present := true
+      else z2 := add e !z2) z;
   !z1, !present, !z2
 
 let elements zdd =
@@ -499,18 +499,18 @@ let print_to_dot fmt z =
   let name = let r = ref 0 in fun () -> incr r; "N" ^ string_of_int !r in
   let rec visit = function
     | Bottom ->
-        let s = name () in
-        fprintf fmt "node [shape = none, label=\"Bot\"]; %s;@\n" s; s
+      let s = name () in
+      fprintf fmt "node [shape = none, label=\"Bot\"]; %s;@\n" s; s
     | Top ->
-        let s = name () in
-        fprintf fmt "node [shape = none, label=\"Top\"]; %s;@\n" s; s
+      let s = name () in
+      fprintf fmt "node [shape = none, label=\"Top\"]; %s;@\n" s; s
     | Node (_, i, l, r) ->
-        let nl = memo l in
-        let nr = memo r in
-        let n = name () in
-        fprintf fmt "node [shape = circle, label=\"%d\"]; %s;@\n" i n;
-        fprintf fmt "%s -> %s [style = dotted];@\n%s -> %s;@\n" n nl n nr;
-        n
+      let nl = memo l in
+      let nr = memo r in
+      let n = name () in
+      fprintf fmt "node [shape = circle, label=\"%d\"]; %s;@\n" i n;
+      fprintf fmt "%s -> %s [style = dotted];@\n%s -> %s;@\n" n nl n nr;
+      n
   and memo z = match z with
     | Bottom | Top -> visit z
     | _ -> try H1.find h z with Not_found -> let n = visit z in H1.add h z n; n

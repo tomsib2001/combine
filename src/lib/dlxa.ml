@@ -197,7 +197,7 @@ let iter_up t ?(self = true) f n =
   rec_iter_up up.(n)
 
 (* Removes the given column and all rows in column own list from
- the DLM*)
+   the DLM*)
 let cover t h =
   t.left.(t.right.(h)) <- t.left.(h);
   t.right.(t.left.(h)) <- t.right.(h);
@@ -213,7 +213,7 @@ let cover t h =
   iter_down t ~self:false cover_row h
 
 (* Un-removes the given column and all rows in column own list from
- the DLM*)
+   the DLM*)
 let uncover t h =
   let uncover_node n =
     let c = t.c.(n) in

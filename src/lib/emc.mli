@@ -33,7 +33,7 @@
 *)
 
 type solution = int list
-    (** A solution is a set of rows *)
+(** A solution is a set of rows *)
 
 (** A common interface for ZDD and DLX *)
 module type S = sig
@@ -41,20 +41,20 @@ module type S = sig
   type t
 
   val create: ?primary:int -> bool array array -> t
-    (** Creates an EMC problem. *)
+  (** Creates an EMC problem. *)
 
   val create_sparse: ?primary:int -> columns:int -> int list array -> t
-    (** To be used instead of [create] when the matrix is large but sparse. *)
+  (** To be used instead of [create] when the matrix is large but sparse. *)
 
   val find_solution: t -> solution
-    (** Returns the first solution that is found.
-        Raises [Not_found] if the problem has no solution. *)
+  (** Returns the first solution that is found.
+      Raises [Not_found] if the problem has no solution. *)
 
   val iter_solution: (solution -> unit) -> t -> unit
-    (** [Emc.iter_solution f p] applies [f] in turn to each solution. *)
+  (** [Emc.iter_solution f p] applies [f] in turn to each solution. *)
 
   val count_solutions: t -> int
-    (** The total number of solutions. *)
+  (** The total number of solutions. *)
 
   module type ARITH = sig
     type t
@@ -62,10 +62,10 @@ module type S = sig
     val one: t
     val add: t -> t -> t
   end
-    (** Minimal arithmetic module to count solutions *)
+  (** Minimal arithmetic module to count solutions *)
 
   module Count(A: ARITH) : sig val count_solutions: t -> A.t end
-    (** To count solutions using any arithmetic implementation *)
+  (** To count solutions using any arithmetic implementation *)
 
 end
 
@@ -89,15 +89,15 @@ module Sat : sig
   val print_in_file: string -> t -> unit
 
   type sat_solver = input:string -> output:string -> string
-      (** the command line to call a SAT solver built from two filenames,
-          [input] for the input in DIMACS format, and
-          [output] for the output of the SAT solver.
-          E.g. the function for minisat2 is simply
-          (fun ~input ~output -> sprintf "minisat2 %s %s" input output) *)
+  (** the command line to call a SAT solver built from two filenames,
+      [input] for the input in DIMACS format, and
+      [output] for the output of the SAT solver.
+      E.g. the function for minisat2 is simply
+      (fun ~input ~output -> sprintf "minisat2 %s %s" input output) *)
 
   val find_solution: sat_solver -> t -> solution
-    (** Finds a solution using a SAT solver.
-        Raises [Not_found] is there is no solution *)
+  (** Finds a solution using a SAT solver.
+      Raises [Not_found] is there is no solution *)
 
 end
 

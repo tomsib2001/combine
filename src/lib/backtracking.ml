@@ -43,11 +43,11 @@ let all_tiles_same_size tl =
 let add_tile grid ({pattern=p}, tx, ty) =
   let grid = Matrix.copy grid in
   for y = 0 to p.height - 1 do for x = 0 to p.width - 1 do
-    if p.matrix.(y).(x) then begin
-      if not grid.(ty + y).(tx + x) then raise Exit;
-      grid.(ty + y).(tx + x) <- false
-    end
-  done done;
+      if p.matrix.(y).(x) then begin
+        if not grid.(ty + y).(tx + x) then raise Exit;
+        grid.(ty + y).(tx + x) <- false
+      end
+    done done;
   grid
 
 (* check that the connected component of c has an area multiple of size *)
@@ -58,20 +58,20 @@ let check_areas grid size =
   let rec check_rec s = function
     | [] -> if s mod size <> 0 then raise Exit
     | (y, x) :: rem ->
-	let s, rem = if x < w && grid.(y).(x+1) then begin
-	  grid.(y).(x+1) <- false; s+1, (y, x+1)::rem end else s,rem in
-	let s,rem = if y < h && grid.(y+1).(x) then begin
-	  grid.(y+1).(x) <- false; s+1, (y+1, x)::rem end else s,rem in
-	let s,rem = if x > 0 && grid.(y).(x-1) then begin
-	  grid.(y).(x-1) <- false; s+1, (y, x-1)::rem end else s,rem in
-	let s,rem = if y > 0 && grid.(y-1).(x) then begin
-	  grid.(y-1).(x) <- false; s+1, (y-1, x)::rem end else s,rem in
-	check_rec s rem
+      let s, rem = if x < w && grid.(y).(x+1) then begin
+          grid.(y).(x+1) <- false; s+1, (y, x+1)::rem end else s,rem in
+      let s,rem = if y < h && grid.(y+1).(x) then begin
+          grid.(y+1).(x) <- false; s+1, (y+1, x)::rem end else s,rem in
+      let s,rem = if x > 0 && grid.(y).(x-1) then begin
+          grid.(y).(x-1) <- false; s+1, (y, x-1)::rem end else s,rem in
+      let s,rem = if y > 0 && grid.(y-1).(x) then begin
+          grid.(y-1).(x) <- false; s+1, (y-1, x)::rem end else s,rem in
+      check_rec s rem
   in
   try
     for y = 0 to h do for x = 0 to w do
-      if grid.(y).(x) then begin grid.(y).(x) <- false; check_rec 1 [(y, x)] end
-    done done;
+        if grid.(y).(x) then begin grid.(y).(x) <- false; check_rec 1 [(y, x)] end
+      done done;
     true
   with Exit ->
     false
@@ -81,22 +81,22 @@ let rec backtracking f sol size grid todo pieces =
   else if check_areas grid size then match pieces with
     | [] -> ()
     | tiles :: other_pieces ->
-        let test_move (t, x, y as m) =
-          try
-            let grid = add_tile grid m in
-            let sol = m :: sol in
-            let todo = todo - size in
-            match t.multiplicity with
-              | Mone | Mmaybe -> backtracking f sol size grid todo other_pieces
-              | Minf          -> backtracking f sol size grid todo pieces
-          with Exit ->
-            ()
-        in
-        List.iter test_move tiles;
-        match tiles with
-          | ({multiplicity = Mmaybe | Minf},_,_) :: _ ->
-              backtracking f sol size grid todo other_pieces
-          | [] | ({ multiplicity = Mone },_,_) :: _ -> ()
+      let test_move (t, x, y as m) =
+        try
+          let grid = add_tile grid m in
+          let sol = m :: sol in
+          let todo = todo - size in
+          match t.multiplicity with
+          | Mone | Mmaybe -> backtracking f sol size grid todo other_pieces
+          | Minf          -> backtracking f sol size grid todo pieces
+        with Exit ->
+          ()
+      in
+      List.iter test_move tiles;
+      match tiles with
+      | ({multiplicity = Mmaybe | Minf},_,_) :: _ ->
+        backtracking f sol size grid todo other_pieces
+      | [] | ({ multiplicity = Mone },_,_) :: _ -> ()
 
 let possible_moves grid size tile =
   let res = ref [] in

@@ -17,7 +17,7 @@
 (*                                                                        *)
 (**************************************************************************)
 
-  (* module Count = functor (A: ARITH) -> *)
+(* module Count = functor (A: ARITH) -> *)
 
 
 module type Time = sig
@@ -63,11 +63,11 @@ module Make = functor (T : Time) -> functor (N : N) -> struct
 
   let rec interp_expr expr = match expr.expr_node with
     | Var s -> begin
-      try
-        let value = Hashtbl.find var_env s in
-        value
-      with Not_found -> raise (Error
-                                 (expr.expr_pos, "Unbound value " ^ s)) end
+        try
+          let value = Hashtbl.find var_env s in
+          value
+        with Not_found -> raise (Error
+                                   (expr.expr_pos, "Unbound value " ^ s)) end
     | Pattern m -> Pattern.create m
     | Binary (op, e1, e2) -> interp_binary e1 e2 op
     | SetOp (op, d, e) -> interp_setop d e op
@@ -111,11 +111,11 @@ module Make = functor (T : Time) -> functor (N : N) -> struct
 
   let rec interp3_expr expr = match expr.expr_node with
     | Var s -> begin
-      try
-        let value = Hashtbl.find var3_env s in
-        value
-      with Not_found -> raise (Error
-                                 (expr.expr_pos, "Unbound value " ^ s)) end
+        try
+          let value = Hashtbl.find var3_env s in
+          value
+        with Not_found -> raise (Error
+                                   (expr.expr_pos, "Unbound value " ^ s)) end
     | _ ->
       raise (Error (expr.expr_pos, "3D pattern expected"))
 
@@ -139,24 +139,24 @@ module Make = functor (T : Time) -> functor (N : N) -> struct
 
   let count_emc fmt efmt p algo =
     let { columns = columns; primary = primary; emc = m; tiles = decode_tbl }
-        as emc = Tiling.Problem.ToEMC.make p in
+      as emc = Tiling.Problem.ToEMC.make p in
     if !debug then fprintf fmt "@[<hov 2>EMC size is %a@]@." print_emc_size emc;
     fprintf fmt "%s : @?" p.pname;
     init_timer ();
     begin match algo with
-    | Dlx when !fast_dlx ->
-      let p = Dlxa.create_sparse ~primary ~columns m in
-      fprintf fmt "(DLX) %d solutions@." (Dlxa.count_solutions p)
-    | Dlx ->
-      let p = Emc.D.create_sparse ~primary ~columns m in
-      fprintf fmt "(DLX) %a solutions@." N.print (DCount.count_solutions p)
-    | Zdd ->
-      let p = Emc.Z.create_sparse ~primary ~columns m in
-      if !debug then fprintf efmt "ZDD has size %d@." (Zdd.size p);
-      fprintf fmt "(ZDD) %a solutions@." N.print (ZCount.count_solutions p)
-    | Sat _ ->
-      fprintf efmt "cannot count solutions with a SAT solver@.";
-      exit 1
+      | Dlx when !fast_dlx ->
+        let p = Dlxa.create_sparse ~primary ~columns m in
+        fprintf fmt "(DLX) %d solutions@." (Dlxa.count_solutions p)
+      | Dlx ->
+        let p = Emc.D.create_sparse ~primary ~columns m in
+        fprintf fmt "(DLX) %a solutions@." N.print (DCount.count_solutions p)
+      | Zdd ->
+        let p = Emc.Z.create_sparse ~primary ~columns m in
+        if !debug then fprintf efmt "ZDD has size %d@." (Zdd.size p);
+        fprintf fmt "(ZDD) %a solutions@." N.print (ZCount.count_solutions p)
+      | Sat _ ->
+        fprintf efmt "cannot count solutions with a SAT solver@.";
+        exit 1
     end;
     if !timing then fprintf fmt "%s solutions counted in %a@." p.pname finish_timer ()
 
@@ -165,20 +165,20 @@ module Make = functor (T : Time) -> functor (N : N) -> struct
     let { P3.ToEMC.primary = primary; emc = m; tiles = decode_tbl } as emc =
       P3.ToEMC.make p in
     if !debug then fprintf fmt "@[<hov 2>EMC size is %a@]@."
-      P3.ToEMC.print_emc_size emc;
+        P3.ToEMC.print_emc_size emc;
     fprintf fmt "%s : @?" p.P3.pname;
     init_timer ();
     begin match algo with
-    | Dlx ->
-      let p = Emc.D.create ~primary m in
-      fprintf fmt "(DLX) %a solutions@." N.print (DCount.count_solutions p)
-    | Zdd ->
-      let p = Emc.Z.create ~primary m in
-      if !debug then fprintf efmt "ZDD has size %d@." (Zdd.size p);
-      fprintf fmt "(ZDD) %a solutions@." N.print (ZCount.count_solutions p)
-    | Sat _ ->
-      fprintf efmt "cannot count solutions with a SAT solver@.";
-      exit 1
+      | Dlx ->
+        let p = Emc.D.create ~primary m in
+        fprintf fmt "(DLX) %a solutions@." N.print (DCount.count_solutions p)
+      | Zdd ->
+        let p = Emc.Z.create ~primary m in
+        if !debug then fprintf efmt "ZDD has size %d@." (Zdd.size p);
+        fprintf fmt "(ZDD) %a solutions@." N.print (ZCount.count_solutions p)
+      | Sat _ ->
+        fprintf efmt "cannot count solutions with a SAT solver@.";
+        exit 1
     end;
     if !timing then
       fprintf fmt "%s solutions counted in %a@." p.P3.pname finish_timer ()
@@ -271,7 +271,7 @@ module Make = functor (T : Time) -> functor (N : N) -> struct
         let zdd = Emc.Z.create_sparse ~columns ~primary m in
         Emc.Z.iter_solution f zdd
       | Sat _ ->
-          fprintf fmt "cannot find all solutions with SAT@."
+        fprintf fmt "cannot find all solutions with SAT@."
     in
     let nb = ref 0 in
     let print1 sol =
@@ -296,7 +296,7 @@ module Make = functor (T : Time) -> functor (N : N) -> struct
         let zdd = Emc.Z.create ~primary m in
         Emc.Z.iter_solution f zdd
       | Sat _ ->
-          fprintf fmt "cannot find all solutions with SAT@."
+        fprintf fmt "cannot find all solutions with SAT@."
     in
     let nb = ref 0 in
     let print1 sol =
@@ -315,14 +315,14 @@ module Make = functor (T : Time) -> functor (N : N) -> struct
       let f sol =
         if !timing then fprintf fmt "%S solved in %a@." p.pname finish_timer ();
         begin match output with
-        | Svg f ->
-          let width, height =
-            p.grid.Pattern.width * 25, p.grid.Pattern.height * 25 in
-          Tiling.Problem.print_solution_to_svg_file f ~width ~height p sol;
-          fprintf fmt "SVG written in file %S@." f
-        | Ascii ->
-          Tiling.Problem.print_solution_ascii Format.std_formatter p sol;
-          fprintf fmt "@."
+          | Svg f ->
+            let width, height =
+              p.grid.Pattern.width * 25, p.grid.Pattern.height * 25 in
+            Tiling.Problem.print_solution_to_svg_file f ~width ~height p sol;
+            fprintf fmt "SVG written in file %S@." f
+          | Ascii ->
+            Tiling.Problem.print_solution_ascii Format.std_formatter p sol;
+            fprintf fmt "@."
         end;
         raise Interrupt
       in
@@ -460,4 +460,4 @@ module Make = functor (T : Time) -> functor (N : N) -> struct
     List.iter (fun d -> interp_decl fmt efmt d) dl;
     List.rev !problems, List.rev !problems3
 
- end
+end

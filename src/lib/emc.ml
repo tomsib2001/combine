@@ -69,7 +69,7 @@ module D = struct
   let create_sparse = Dlx.create_sparse
   let find_solution p = Dlx.list_of_solution (Dlx.get_first_solution p)
   let iter_solution f p = Dlx.iter_solution (
-    fun e -> f (Dlx.list_of_solution e)) p
+      fun e -> f (Dlx.list_of_solution e)) p
   let count_solutions p = Dlx.count_solutions p
   module type ARITH = sig
     type t
@@ -96,8 +96,8 @@ module Z = struct
   let column ?primary j n colj =
     (* we build the solution from bottom up, i.e. i = n-1,...,1,0 *)
     let rec build z zf i =
-     (* z  = exactly one i such that m[i][j]=true
-        zf = only i such that m[i][j]=false *)
+      (* z  = exactly one i such that m[i][j]=true
+         zf = only i such that m[i][j]=false *)
       if i < 0 then z
       else if colj i then build (construct i z zf) zf (i-1)
       else build (construct i z z) (construct i zf zf) (i-1)
@@ -243,16 +243,16 @@ module Sat = struct
     let conj = ref [] in
     for i = 0 to width - 1 do
       if i < primary then begin
-	let disj = ref [] in
-	for j = 0 to length - 1 do
+        let disj = ref [] in
+        for j = 0 to length - 1 do
           if m.(j).(i) then disj := Pos j :: !disj
-	done;
-	conj := !disj :: !conj;
+        done;
+        conj := !disj :: !conj;
       end;
       for j = 0 to length -1 do if m.(j).(i) then
-        for j2 = j + 1 to length -1 do if m.(j2).(i) then
-          conj := [Neg j; Neg j2] :: !conj
-        done
+          for j2 = j + 1 to length -1 do if m.(j2).(i) then
+              conj := [Neg j; Neg j2] :: !conj
+          done
       done
     done;
     !conj
@@ -268,8 +268,8 @@ module Sat = struct
     (* change the columns list array to row list array *)
     for i = 0 to length - 1 do
       List.iter (fun e ->
-	a'.(e) <- i::a'.(e)
-      ) a.(i);
+          a'.(e) <- i::a'.(e)
+        ) a.(i);
     done;
     let length' = Array.length a' in
     (* create all the disjunction to limit the choice of a column in the fmla *)
@@ -280,11 +280,11 @@ module Sat = struct
     let rec limit_col = function [] -> () | h::t -> disj_of h t; limit_col t in
     for i = 0 to length' - 1 do
       (* create the disjunction to force the choice of at least a 1 which
-	 is on a primary column *)
+         	 is on a primary column *)
       if primary = length' || i < primary then begin
-	let disj = ref [] in
-	List.iter (fun e -> disj := Pos e :: !disj) a'.(i);
-	conj := !disj :: !conj;
+        let disj = ref [] in
+        List.iter (fun e -> disj := Pos e :: !disj) a'.(i);
+        conj := !disj :: !conj;
       end;
       limit_col a'.(i);
     done;

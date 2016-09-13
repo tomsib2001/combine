@@ -39,46 +39,46 @@ module Pattern : sig
 
 
   val create: bool array array -> t
-    (** [create m] creates a pattern of type t from a boolean matrix *)
+  (** [create m] creates a pattern of type t from a boolean matrix *)
 
   val dummy : unit -> t
 
   val apply: D4.t -> t -> t
-    (** [apply i p] creates a new pattern which is the result of the
-       transformation of [p] by [i] *)
+  (** [apply i p] creates a new pattern which is the result of the
+      transformation of [p] by [i] *)
 
   val resize: t -> w:int -> h:int -> t
-    (** [resize p w h] change the size of [p] to [w] (width) and [h] (height).
+  (** [resize p w h] change the size of [p] to [w] (width) and [h] (height).
       Points which are over [w] and [h] will not appear. *)
 
   val crop  : t -> x:int -> y:int -> w:int -> h:int -> t
-    (** [crop p x y w h] creates a pattern from [p] with the rectangle of size
-       [w, h] at position [x, y] in [p] *)
+  (** [crop p x y w h] creates a pattern from [p] with the rectangle of size
+      [w, h] at position [x, y] in [p] *)
 
   val shift: t -> ofsx:int -> ofsy:int -> t
-    (** [shift p ofsx ofsy] shift pattern [p] by [osfx, osfy] *)
+  (** [shift p ofsx ofsy] shift pattern [p] by [osfx, osfy] *)
 
   val union: t -> t -> t
-    (** [union p1 p2] creates a pattern from the logical union beetween [p1] and
-	[p2] *)
+  (** [union p1 p2] creates a pattern from the logical union beetween [p1] and
+      	[p2] *)
 
   val inter: t -> t -> t
-    (** [inter p1 p2] creates a pattern from the logical intersection
-     beetween [p1] and  [p2] *)
+  (** [inter p1 p2] creates a pattern from the logical intersection
+      beetween [p1] and  [p2] *)
 
   val diff : t -> t -> t
-    (** [inter p1 p2] creates a pattern from the logical difference
-     beetween [p1] and  [p2] *)
+  (** [inter p1 p2] creates a pattern from the logical difference
+      beetween [p1] and  [p2] *)
 
   val xor : t -> t -> t
-    (** [xor p1 p2] creates a pattern from the logical xor
-     beetween [p1] and  [p2] *)
+  (** [xor p1 p2] creates a pattern from the logical xor
+      beetween [p1] and  [p2] *)
 
   val has_iso: D4.t -> t -> bool
-    (** [has_iso t p] returns true if [p] is invariant by [i] *)
+  (** [has_iso t p] returns true if [p] is invariant by [i] *)
 
   val print : Format.formatter -> t -> unit
-    (** print a pattern *)
+  (** print a pattern *)
 
 end
 
@@ -96,17 +96,17 @@ module Tile : sig
   }
 
   val create: ?name:string -> ?s:symmetries -> ?m:multiplicity -> Pattern.t -> t
-    (** construct a tile from his name, its symmetries [s] and
-	its multiplicity [m]. [s] defaults to [Snone] and [m] defaults
-	to [Minf] *)
+  (** construct a tile from his name, its symmetries [s] and
+      	its multiplicity [m]. [s] defaults to [Snone] and [m] defaults
+      	to [Minf] *)
 
   val dummy : unit -> t
 
   val apply: D4.t -> t -> t
-    (** [apply i t] creates a new tile by applying transformation [i] to [t] *)
+  (** [apply i t] creates a new tile by applying transformation [i] to [t] *)
 
   val print: Format.formatter -> t -> unit
-    (** print a tile *)
+  (** print a tile *)
 
   val create_all_symmetries: t -> t list
 
@@ -166,7 +166,7 @@ module Problem : sig
 
     val print_solution_ascii :
       Format.formatter -> problem -> emc -> int list -> unit
-    (** print a solution with ascii symboles to draw tiles*)
+      (** print a solution with ascii symboles to draw tiles*)
 
   end
 
@@ -229,7 +229,7 @@ module Problem3 : sig
 
     val print_solution_ascii :
       Format.formatter -> problem -> emc -> int list -> unit
-    (** print a solution with ascii symboles to draw tiles*)
+      (** print a solution with ascii symboles to draw tiles*)
 
   end
 

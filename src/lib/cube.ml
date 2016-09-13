@@ -24,7 +24,7 @@ type t = int array array (* 3x3 matrix *)
 
 let compose m1 m2 = (* matrix multiplication *)
   let mul i j = m1.(i).(0) * m2.(0).(j) + m1.(i).(1) * m2.(1).(j)
-    + m1.(i).(2) * m2.(2).(j) in
+                + m1.(i).(2) * m2.(2).(j) in
   Array.init 3 (fun i -> Array.init 3 (mul i))
 
 (* -x = w - 1 - x
@@ -50,9 +50,9 @@ let all =
   let res = ref [] in
   let rec make = function
     | [] ->
-        res := Array.map Array.copy m :: !res
+      res := Array.map Array.copy m :: !res
     | (i,j) :: l ->
-        m.(i).(j) <- 1; make l; m.(i).(j) <- -1; make l; m.(i).(j) <- 0 in
+      m.(i).(j) <- 1; make l; m.(i).(j) <- -1; make l; m.(i).(j) <- 0 in
   List.iter make
     [[0,0; 1,1; 2,2];
      [0,0; 1,2; 2,1];
@@ -67,7 +67,7 @@ let () = assert (List.length all = 48)
 
 let det m =
   let m i j = m.(i).(j) in
-    m 0 0 * (m 1 1 * m 2 2 - m 2 1 * m 1 2)
+  m 0 0 * (m 1 1 * m 2 2 - m 2 1 * m 1 2)
   - m 0 1 * (m 1 0 * m 2 2 - m 2 0 * m 1 2)
   + m 0 2 * (m 1 0 * m 2 1 - m 2 0 * m 1 1)
 
