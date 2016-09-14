@@ -149,16 +149,17 @@ let () =
   let n3 = mk_node ~id:3 t 0 0 in
   let line = create_line 4 n2 color [n0.id; n1.id; n3.id] in
   assert (line = [2; 5; 9; 13; 17]);
-  assert ([n2.id, color] = extract_coloring 4 (Array.make 1 line) [0]);
-
-  let coloring = solve @@ mk_graph (Pattern.dummy ())
+  let g = mk_graph (Pattern.dummy ())
       [| n0; n1; n2; n3; |]
-      [| []; []; [0; 1; 3]; []; |]
+      [| []; []; [0; 1; 3]; []; |] in
+  assert ([n2, color] = extract_coloring g 4 (Array.make 1 line) [0]);
+
+  let coloring = solve @@ g
   in
   (* Format.printf "["; *)
   (* List.iter (fun (n, c) -> Format.printf "(%d, %d); " n c) coloring; *)
   (* Format.printf "]\n"; *)
-  assert (coloring = [(0, 0); (2, 1); (1, 0); (3, 0); ]);
+  assert (coloring = [(n0, 0); (n2, 1); (n1, 0); (n3, 0); ]);
 
 
 (*

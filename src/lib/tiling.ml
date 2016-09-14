@@ -61,11 +61,11 @@ module Pattern = struct
     for y = p.height-1 downto 0 do
       Array.iteri (
         fun x cell ->
-          if cell then Format.fprintf fmt "*"
-          else Format.fprintf fmt ".";
+          if cell then Format.fprintf fmt "*%!"
+          else Format.fprintf fmt ".%!";
           if cell then if (x + y) mod 2 = 0 then incr even else incr odd
       ) p.matrix.(y);
-      if y > 0 then Format.fprintf fmt "@\n"
+      if y > 0 then Format.fprintf fmt "@\n%!"
     done
   (* ; Format.fprintf fmt "(%d even, %d odd)@\n" !even !odd *)
 
@@ -227,9 +227,9 @@ module Problem = struct
 
   let print fmt problem =
     if problem.pname <> "" then
-      Format.fprintf fmt "problem %S@\n" problem.pname;
-    Format.fprintf fmt "%a@\n" Pattern.print problem.grid;
-    List.iter (fun t -> Format.fprintf fmt "%a@\n" Tile.print t) problem.pieces
+      Format.fprintf fmt "problem %S@\n%!" problem.pname;
+    Format.fprintf fmt "%a@\n%!" Pattern.print problem.grid;
+    List.iter (fun t -> Format.fprintf fmt "%a@\n%!" Tile.print t) problem.pieces
 
   (** Solution *)
 
@@ -257,11 +257,11 @@ module Problem = struct
     ) s;
     for y = p.grid.height - 1 downto 0 do
       for x = 0 to p.grid.width - 1 do
-        fprintf fmt "%c" board.(y).(x)
+        fprintf fmt "%c%!" board.(y).(x)
       done;
-      if y > 0 then fprintf fmt "@\n"
+      if y > 0 then fprintf fmt "@\n%!"
     done;
-    fprintf fmt "@\n"
+    fprintf fmt "@\n%!"
 
   let print_board_svg width height u fmt =
     for i = 0 to height do
@@ -427,7 +427,7 @@ module Problem = struct
 
     type emc = {
       columns: int;
-      primary: int;			      (* number of primary columns *)
+      primary: int;                           (* number of primary columns *)
       emc    : int list array;
       tiles  : (Tile.t * int * int) array;    (* row -> tile and its position *)
     }
@@ -594,7 +594,7 @@ module Problem3 = struct
   module ToEMC = struct
 
     type emc = {
-      primary: int;			      (* number of primary columns *)
+      primary: int;                           (* number of primary columns *)
       emc    : bool array array;
       tiles  : (Tile3.t * int * int * int) array; (* row -> tile and position *)
     }
@@ -737,7 +737,7 @@ module Problem3 = struct
     let print_solution_ascii fmt p emc rows =
       let print r =
         let t, x, y, z = emc.tiles.(r) in
-        fprintf fmt "tile '%s' at (%d, %d, %d)@\n" t.name x y z in
+        fprintf fmt "tile '%s' at (%d, %d, %d)@\n%!" t.name x y z in
       List.iter print rows
 
   end
@@ -754,6 +754,9 @@ module FourColoring = struct
     y : int;
   }
 
+  let print_node fmt n =
+    Format.fprintf fmt "node %d: (%d,%d)\n%!" n.id n.x n.y
+
   let node_cnt = ref 0
 
   let mk_node ?id tile x y = {
@@ -767,6 +770,26 @@ module FourColoring = struct
     nodes : node array;
     adj : (int list) array
   }
+
+  let print_grid fmt grid =
+    Pattern.print fmt grid
+
+  let print_nodes fmt nodes =
+    Array.iter (fun x -> print_node fmt x) nodes
+
+  let print_adj fmt (adj : (int list) array) =
+    Array.iteri (fun i l ->
+        Format.fprintf fmt "Node %d: %!" i;
+        List.iter (fun x -> Format.fprintf fmt "%d %!" x) l;
+        Format.fprintf fmt "\n%!";) adj
+
+  let print_graph fmt g =
+    Format.fprintf fmt "\nGrid:\n%!";
+    print_grid fmt g.grid;
+    Format.fprintf fmt "\nNodes:\n%!";
+    print_nodes fmt g.nodes;
+    Format.fprintf fmt "\nAdjacency list:\n%!";
+    print_adj fmt g.adj
 
   let mk_graph grid nodes adj = {grid; nodes; adj}
 
@@ -802,7 +825,7 @@ module FourColoring = struct
     let reverse_map = Hashtbl.create 100 in
     let all_cells grid x y t id =
       let res = get_cells grid.Pattern.height x y t in
-      List.iter (fun cell -> Hashtbl.add reverse_map cell id) res; res in
+      List.iter (fun cell -> Format.printf "Reverse mapping (%d,%d) to node %d\n%!" (fst cell) (snd cell) id;Hashtbl.add reverse_map cell id) res; res in
     let all_outside_neighbours grid all_cells : cell list =
       let pre_res = List.concat
           (List.map (fun (i,j) -> get_neighbours grid i j) all_cells)
@@ -817,24 +840,33 @@ module FourColoring = struct
 
   (* our graphs here are undirected *)
   let rev_edge (a,b) = (b,a)
-  let add_edge t (a,b) = 
+  let add_edge t (a,b) =
     Printf.printf "adding an edge between %d and %d\n" a b;
-    t.(a) <- b::t.(a); t.(b) <- a::t.(a)
-  let has_edge t ((a,b) : int*int) = List.mem b t.(a)
+    t.(a) <- b::t.(a); t.(b) <- a::t.(b)
+  let has_edge t ((a,b) : int*int) = List.mem b t.(a) || List.mem a t.(b)
 
   let get_graph (p : Problem.problem) (s : Problem.solution) =
+    Format.printf "entering get_graph\n%!";
+    let fmt = Format.formatter_of_out_channel stdout in
+    Format.printf "printing solution...\n%!";
+    Problem.print_solution_ascii fmt p s;
+    Format.printf "Done printing solution.\n%!";
     let size_graph = List.length s in
     let adj_tab = Array.make size_graph ([] : int list) in
     let tile_cell_graph,reverse_map = get_tile_cell_graph p.grid s in
     let nodes =
       List.map
         (fun (node,adj) ->
-           List.iter (fun c -> try let (edge : int*int) = (node.id,Hashtbl.find reverse_map c) in
-                         if not(has_edge adj_tab edge)
-                         then
-                           begin
-                             add_edge adj_tab edge end with | _ -> Printf.printf "Warning: no reverse for (%d,%d)\n" (fst c) (snd c); raise Not_found)
-             adj; node) tile_cell_graph in
+           List.iter (fun c ->
+               try let (edge : int*int) = (node.id,Hashtbl.find reverse_map c) in
+                 if not (has_edge adj_tab edge)
+                 then add_edge adj_tab edge
+               with | _ ->
+                 Printf.printf "Warning: no reverse for (%d,%d)\n"
+                   (fst c) (snd c); raise Not_found
+             ) adj;
+           node
+        ) tile_cell_graph in
     {
       grid  = p.grid;
       nodes = Array.of_list nodes;
@@ -867,12 +899,46 @@ module FourColoring = struct
     List.fold_left (fun colors ln ->
         let a = sparse.(ln) in
         let nodeId = List.hd a in
+        assert(0 <= nodeId && nodeId < size);
         let nodeloc = nodeId * 4 + size in
         let color = List.find (fun x -> x >= nodeloc && x < nodeloc + 4) a - nodeloc in
         (g.nodes.(nodeId), color) :: colors
       ) [] solution
 
+  let print_coloring fmt (l : (node * int) list) =
+    Format.fprintf fmt "Coloring: \n%!";
+    List.iter (fun (n,c) -> (print_node fmt n); Format.fprintf fmt "%d\n\n%!" c) l
 
+  let print_sparse fmt (size : int) (sparse : int list array) =
+    let m = (Array.length sparse) in
+    let res = Array.make_matrix m (5*size) 0 in
+    Array.iteri
+      (fun i l ->
+         List.iter
+           (fun j -> res.(i).(j) <- 1) l) sparse;
+    for i = 0 to m-1 do
+      Format.fprintf fmt "Node %d:\n%!" (i / 4);
+      for j=0 to size-1 do
+        Format.fprintf fmt "%d%!" res.(i).(j);
+      done;
+      Format.fprintf fmt " %!";
+      for j = size to 5*size-1 do
+        if (j-size) mod 4 = 0 then
+          Format.fprintf fmt " %!";
+        Format.fprintf fmt "%d%!" res.(i).(j)
+      done;
+      Format.fprintf fmt "\n%!";
+    done;
+
+  ;;
+
+
+  (* let print_sparse fmt (sparse : int list array) =  *)
+  (*   Array.iter  *)
+  (*     (fun l ->  *)
+  (*        List.iter  *)
+  (*          (fun i ->  *)
+  (*             Format.fprintf fmt "%d " (\* (String.init i (fun _ -> '0')) *\) i) l; Format.fprintf fmt "\n%!") sparse;; *)
 
   let solve (g: graph) : coloring =
     (* Should we store the number of nodes ? *)
@@ -884,17 +950,26 @@ module FourColoring = struct
           (i+1,cl 0 :: cl 1 :: cl 2 :: cl 3 :: lines)
       ) (0,[]) g.adj
     in
+    (* primary * 5 = primary + (4 * primary) *)
     let emc = Emc.D.create_sparse ~primary ~columns:(primary*5) sparse in
-    (* Format.printf "%a\n" Emc.D.print_emc emc; *)
+    (* Format.printf "%a\n" Problem.ToEMC.print_emc emc; *)
+    Format.printf "%a\n" (fun fmt -> print_sparse fmt primary) sparse;
     let solution = Emc.D.find_solution emc in
     let coloring = extract_coloring g primary sparse solution in
     coloring
 
 
   let print_solution_to_svg_four_colors fmt ~width ~height (p : Problem.problem) (s : Problem.solution) =
+    let fmt_debug = Format.formatter_of_out_channel stdout in
+    Format.fprintf fmt_debug "entering print_solution_to_svg_four_colors with problem:\n%!";
+    Problem.print fmt_debug p;
+    Format.fprintf fmt_debug "and solution:\n%!";
+    Problem.print_solution_ascii fmt_debug p s;
     let g = (get_graph p s) in
+    print_graph fmt_debug g;
     Format.printf "Number of graph nodes: %d@.\n" (Array.length (g.nodes));
     let coloring = solve g in
+    print_coloring fmt_debug coloring;
     let u = width / p.grid.width in
     Format.fprintf fmt
       "@[<hov 2><svg xmlns=\"http://www.w3.org/2000/svg\" \
@@ -903,7 +978,7 @@ module FourColoring = struct
     Problem.print_board_svg p.grid.width p.grid.height u fmt;
     List.iter (
       fun (node,color) ->
-        let color = Problem.hsv_to_rgb (float_of_int color) 0.7 0.95 in
+        let color = Problem.hsv_to_rgb (float_of_int (color * 90)) 0.7 0.95 in
         Problem.print_tile_svg p.grid.height node.x node.y u color fmt node.tile;
     ) coloring;
     Format.fprintf fmt "@]@\n</svg>"

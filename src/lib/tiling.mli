@@ -254,8 +254,8 @@ module FourColoring : sig
 
   val mk_graph : Pattern.t -> node array -> int list array -> graph
 
-  type color
-  type coloring
+  type color = int
+  type coloring = (node * color) list
 
   val get_graph : Problem.problem -> Problem.solution -> graph
 
